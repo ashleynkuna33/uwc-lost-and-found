@@ -14,7 +14,7 @@ function Home({ setView }) {
       {/* Header */}
       <div className="flex justify-center p-6 bg-[#152862] border-b-4 border-[#cead5e] shadow-md">
         <h1 className="font-bold text-white text-2xl tracking-wide">
-          UWC STOLEN ITEMS SYSTEM
+          UWC LOST ITEMS SYSTEM
         </h1>
       </div>
 
