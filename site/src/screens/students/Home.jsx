@@ -49,7 +49,7 @@ function Home({ setView }) {
       {/* Main 2-Grid Content Area */}
       <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 p-4 gap-4">
         {/* Left Column: Report / Found Feed */}
-        <div className="bg-white border border-gray-300 rounded-xl p-4 overflow-y-auto h-full shadow-sm flex flex-col gap-3">
+        <div onClick={() => setView("Find Items")} className="bg-white border border-gray-300 rounded-xl p-4 overflow-y-auto h-full shadow-sm flex flex-col gap-3 cursor-pointer transition-all duration-100 hover:scale-101">
           <h3 className="font-bold text-base text-[#152862] border-b pb-2">
             Recently Reported Items
           </h3>
@@ -76,7 +76,7 @@ function Home({ setView }) {
           {/* Image Grid */}
           <div className="grid grid-cols-1 gap-3 mt-1">
             <div 
-              onClick={() => setActiveImage({ src: homeP1, title: "Main Library Security Desk" })}
+              onClick={() => setActiveImage({ src: homeP1, title: "Main Library Security Desk", time: "08:00 - 21:00 | 08:00 - 13:00 during holidays" })}
               className="overflow-hidden rounded-xl border border-gray-200 cursor-pointer group"
             >
               <img 
@@ -87,7 +87,7 @@ function Home({ setView }) {
             </div>
 
             <div 
-              onClick={() => setActiveImage({ src: homeP2, title: "CPS Main Gate Security Building" })}
+              onClick={() => setActiveImage({ src: homeP2, title: "CPS Main Gate Security Building", time: "24/7" })}
               className="overflow-hidden rounded-xl border border-gray-200 cursor-pointer group"
             >
               <img 
@@ -98,7 +98,7 @@ function Home({ setView }) {
             </div>
 
             <div 
-              onClick={() => setActiveImage({ src: homeP3, title: "ResLife Building" })}
+              onClick={() => setActiveImage({ src: homeP3, title: "ResLife Building", time: "24/7" })}
               className="overflow-hidden rounded-xl border border-gray-200 cursor-pointer group"
             >
               <img 
@@ -140,6 +140,7 @@ function Home({ setView }) {
             <span className="text-sm font-bold text-[#152862] pb-2">
               {activeImage.title}
             </span>
+            <span className="text-sm font-bold text-[#152862]">{activeImage.time}</span>
           </div>
         </div>
       )}

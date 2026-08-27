@@ -37,11 +37,11 @@ function SignIn({setView}) {
                 <button type="button" className="bg-[#cead5e] p-2 font-bold text-blue-950 rounded-xl transition-all duration-100 hover:scale-103 hover:bg-[#816c38]" onClick={handleSignIn}>SIGN IN</button>
 
                 <div className="grid grid-cols-2 mt-4 gap-4">
-                    <button className="flex flex-row items-center py-3 px-1.5 rounded-xl bg-[#cead5e] cursor-pointer gap-2 transition-all duration-100 hover:scale-103 hover:bg-[#816c38]" onClick={() => window.location.href = "https://student.uwc.ac.za/"}>
+                    <button className="flex flex-row items-center py-3 px-3 rounded-xl bg-[#cead5e] cursor-pointer gap-2 transition-all duration-100 hover:scale-103 hover:bg-[#816c38]" onClick={() => window.location.href = "https://student.uwc.ac.za/"}>
                        <FaUserGraduate size={22} color="#162456"/>
                        <h1 className="text-sm font-bold text-blue-950">Log in with Student Portal</h1> 
                     </button>
-                    <button onClick={() => setView("AdminAuth")} className="flex flex-row items-center py-3 px-1.5 rounded-xl bg-[#cead5e] cursor-pointer gap-2 transition-all duration-100 hover:scale-103 hover:bg-[#816c38]">
+                    <button onClick={() => setView("AdminAuth")} className="flex flex-row items-center py-3 px-3 rounded-xl bg-[#cead5e] cursor-pointer gap-2 transition-all duration-100 hover:scale-103 hover:bg-[#816c38]">
                         <FaKey size={22} color="#162456"/>
                         <h1 className="text-sm font-bold text-blue-950">Admin Access</h1>
                     </button>
