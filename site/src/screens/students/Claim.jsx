@@ -20,13 +20,43 @@ function Claim() {
          <div className="flex flex-col md:flex-row gap-4 ml-35 mt-7 mb-4">
                     {/* main Container. */}
 
-                <div className="max-w-[400px] rounded-xl border border-gray-200 bg-white p-100 shadow-lg  ">
+                <div className="max-w-[800px] rounded-xl border border-gray-200 bg-white p-6 shadow-lg  ">
                       {/* the main content */}
 
-                      <div className="bg-grey">
-                         <p>
-                            
+                      <div className="">
+                         <p className="break-words bg-gray-200 p-3 rounded-md">
+
+                            jhadgadsjkdgsafafsadljkahfgw;sdqwiowsajdlafhsjadfvjsasjdfdsvsdouawgedhbw;oqffhdfwequr9tr 
+                            83urkdsjfbmxcnlasfgefqlr3q9pweopwoeiriajkghjdsgfsdusioeuwoefdndsjds
                          </p>
+                      </div>
+
+                      <div>
+                        <form>
+
+                            <div className="mt-4 flex flex-row gap-4">
+                                <div className="flex flex-col gap-2 ">
+                                    <label htmlFor="lost-date">When did you lose it?</label>
+                                    <input
+                                    id="lost-date"
+                                    type="text"
+                                    placeholder="dd-mm-yyyy"
+                                    className="rounded-lg border border-gray-300 p-2 min-w-[350px]"
+                                    />
+                                </div>
+
+                                <div className="flex flex-col gap-2 ml-1">
+                                    <label htmlFor="lost-location">Where did you lose it?</label>
+                                    <input
+                                    id="lost-location"
+                                    type="text"
+                                    placeholder="Location e.g. Library"
+                                    className="rounded-lg border border-gray-300 p-2 min-w-[350px]"
+                                    />
+                                </div>
+                         </div>
+                          
+                        </form>
                       </div>
                 </div>
 
