@@ -14,6 +14,9 @@ function Reports() {
                 <CiLogout size={26} color="#f14c53" className="cursor-pointer"/>
             </div>
 
+              {/* Body content */}
+
+
         </div>
     )
 }

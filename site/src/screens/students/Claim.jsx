@@ -14,6 +14,45 @@ function Claim() {
                 <CiLogout size={26} color="#f14c53" className="cursor-pointer"/>
             </div>
 
+             {/* body section */}
+
+                          
+         <div className="flex flex-col md:flex-row gap-4 ml-35 mt-7 mb-4">
+                    {/* main Container. */}
+
+                <div className="max-w-[400px] rounded-xl border border-gray-200 bg-white p-100 shadow-lg  ">
+                      {/* the main content */}
+
+                      <div className="bg-grey">
+                         <p>
+                            
+                         </p>
+                      </div>
+                </div>
+
+
+
+                <div>
+                      {/* small containers on the side  */}
+                      <div className="max-w-md rounded-xl border border-gray-200 bg-white p-35 shadow-md mb-4">
+                        
+                      </div>
+                      <div className="max-w-md rounded-xl border border-gray-200 bg-white p-35 shadow-md mb-4">
+
+                      </div>
+                      <div className="max-w-md rounded-xl border border-gray-200 bg-white p-35 shadow-md mb-4">
+
+                      </div>
+                      <div className="max-w-md rounded-xl border border-gray-200 bg-white p-35 shadow-md">
+
+                      </div>
+
+                </div>
+
+
+                    
+          </div>
+
         </div>
     )
 }
