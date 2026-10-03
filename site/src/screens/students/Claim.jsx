@@ -72,17 +72,19 @@ function Claim() {
             <label htmlFor="lost-description" className="mb-2">
               Description:
             </label>
-                        <p className="text-sm text-gray-500 [overflow-wrap:anywhere]">
+                        <p className="text-sm text-gray-500 [overflow-wrap:anywhere] ">
                             Please provide a detailed description of the lost item, including any distinguishing features or identifying marks. This will help us in locating and returning your item to you.
                         </p>
                         <textarea
                         id="lost-description"
                         name="lostDescription"
                         placeholder="Provide a detailed description of the lost item."
-                        className="box-border w-full min-w-0 rounded-lg border border-gray-300 p-2 h-60"
+                        className="box-border w-full min-w-0 rounded-lg border border-gray-300 p-2 h-60 mt-2"
                         ></textarea>
             </div>
 
+
+                {/* Receive method section */}
             <div>
 
                 <p className="[overflow-wrap:anywhere]"> How do you want to receive your item?</p>
@@ -94,7 +96,7 @@ function Claim() {
                         name="receiveMethod"
                         type="radio"
                         value="pickup"
-                        className="mr-2"
+                        className="mr-2 [overflow-wrap:anywhere]"
                         />
                         Pick up at the office
                     </label>
@@ -108,14 +110,54 @@ function Claim() {
                         name="receiveMethod"
                         type="radio"
                         value="courier"
-                        className="mr-2"
+                        className="mr-2 [overflow-wrap:anywhere]"
                         />
                         Arrange a courier to pick up the item
                     </label>
 
                 </div>
 
-                
+
+                {/* Contact Number for delivery purposes */}
+
+                <div className="mt-4">
+                    <label>
+                        Contact Number:
+                    </label>
+                    <input
+                        id="contact-number"
+                        name="contactNumber"
+                        type="tel"
+                        placeholder="Enter your cellphone number"
+                        className="box-border w-full min-w-0 rounded-lg border border-gray-300 p-2 mt-2"
+                    />
+                </div>
+
+                {/* a check box for the user to agree to the terms and conditions */}
+                <div className="mt-4">
+                    <label htmlFor="terms" className="flex items-center">
+                        <input
+                            id="terms"
+                            name="terms"
+                            type="checkbox"
+                            className="rounded border-gray-300 text-[#152862] focus:ring-[#152862] focus:ring-offset-0"
+                        />
+                        <span className="ml-2 text-sm text-gray-700 [overflow-wrap:anywhere]">
+                            I confirm that this item belongs to me and I agree to the terms and conditions.
+                        </span>
+                    </label>
+                </div>
+
+                {/* Submit button */}
+                <div className="mt-6">
+                    <button
+                        type="submit"
+                        className="rounded-lg bg-[#152862] py-2 px-4 text-white hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[#152862] focus:ring-offset-2 w-sm ml-5"
+                    >
+                        Submit Claim
+                    </button>
+                </div>
+
             </div>
 
 
@@ -127,14 +169,14 @@ function Claim() {
         {/* Side cards */}
         <div className="min-w-0 space-y-4 lg:col-span-2">
           <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-md">
-            <h3 className="font-semibold">Card 1</h3>
+            <h3 className="font-semibold">Item</h3>
             <p className="mt-2 [overflow-wrap:anywhere]">
               Add your information here.
             </p>
           </div>
 
           <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-md">
-            <h3 className="font-semibold">Card 2</h3>
+            <h3 className="font-semibold">Status</h3>
             <p className="mt-2 [overflow-wrap:anywhere]">
               Add your information here.
             </p>
@@ -148,7 +190,7 @@ function Claim() {
           </div>
 
           <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-md">
-            <h3 className="font-semibold">Card 4</h3>
+            <h3 className="font-semibold">Need help?</h3>
             <p className="mt-2 [overflow-wrap:anywhere]">
               Add your information here.
             </p>
