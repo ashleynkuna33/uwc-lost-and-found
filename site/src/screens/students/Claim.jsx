@@ -2,89 +2,161 @@ import { FiUser } from "react-icons/fi";
 import { CiLogout } from "react-icons/ci";
 
 function Claim() {
-    return(
-        <div className="flex-1 flex flex-col h-full min-h-0 p-4 overflow-y-auto bg-[#eaf1f7]">
+  return (
+    <div className="flex min-h-screen min-w-0 flex-1 flex-col overflow-y-auto bg-[#eaf1f7] p-4 md:p-6">
+      {/* User section */}
+      <div className="flex flex-wrap items-center justify-end gap-2">
+        <div className="flex items-center gap-2 rounded-full bg-[#152862]/10 px-3 py-2 font-semibold text-[#152862]">
+          <FiUser className="text-[#cead5e]" size={22} />
+          <span>
+            Logged in as: <strong className="text-black">4429119</strong>
+          </span>
+        </div>
 
-            {/* user section */}
-            <div className="flex justify-end items-center p-2 gap-2">
-                <div className="flex items-center gap-2 bg-[#152862]/10 px-3 py-1 rounded-full font-semibold text-[#152862]">
-                    <FiUser className="text-[#cead5e]" size={22} />
-                    <span>Logged in as: <strong className="text-black">4429119</strong></span>
-                </div>
-                <CiLogout size={26} color="#f14c53" className="cursor-pointer"/>
+        <CiLogout
+          size={26}
+          color="#f14c53"
+          className="cursor-pointer"
+        />
+      </div>
+
+      {/* Body section */}
+      <div className="mt-4 grid grid-cols-1 items-start gap-4 lg:grid-cols-5">
+        {/* Main card */}
+        <div className="min-w-0 rounded-xl border border-gray-200 bg-white p-4 shadow-lg md:p-6 lg:col-span-3">
+         
+
+          <form className="mt-6 space-y-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="flex min-w-0 flex-col gap-2">
+                <label htmlFor="lost-date" className="mb-2">
+                  When did you lose it?
+                </label>
+                <input
+                  id="lost-date"
+                  name="lostDate"
+                  type="date"
+                  className="box-border w-full min-w-0 rounded-lg border border-gray-300 p-2"
+                />
+              </div>
+
+              <div className="flex min-w-0 flex-col gap-2">
+                <label htmlFor="lost-location" className="mb-2">
+                  Where did you lose it?
+                </label>
+                <input
+                  id="lost-location"
+                  name="lostLocation"
+                  type="search"
+                  placeholder="Location e.g. Library"
+                  className="box-border w-full min-w-0 rounded-lg border border-gray-300 p-2"
+                />
+              </div>
             </div>
 
-             {/* body section */}
+            <div>
+            <label htmlFor="lost-description" >
+              Attachments:
+            </label>
+                    <input
+                    id="lost-description"
+                    name="lostDescription"
+                    type="file"
+                    className="box-border w-full min-w-0 rounded-lg border border-gray-300 p-2 mt-2"
+                    ></input>
 
-                          
-         <div className="flex flex-col md:flex-row gap-4 ml-35 mt-7 mb-4">
-                    {/* main Container. */}
+            </div>
 
-                <div className="max-w-[800px] rounded-xl border border-gray-200 bg-white p-6 shadow-lg  ">
-                      {/* the main content */}
+            <div>
 
-                      <div className="">
-                         <p className="break-words bg-gray-200 p-3 rounded-md">
+            <label htmlFor="lost-description" className="mb-2">
+              Description:
+            </label>
+                        <p className="text-sm text-gray-500 [overflow-wrap:anywhere]">
+                            Please provide a detailed description of the lost item, including any distinguishing features or identifying marks. This will help us in locating and returning your item to you.
+                        </p>
+                        <textarea
+                        id="lost-description"
+                        name="lostDescription"
+                        placeholder="Provide a detailed description of the lost item."
+                        className="box-border w-full min-w-0 rounded-lg border border-gray-300 p-2 h-60"
+                        ></textarea>
+            </div>
 
-                            jhadgadsjkdgsafafsadljkahfgw;sdqwiowsajdlafhsjadfvjsasjdfdsvsdouawgedhbw;oqffhdfwequr9tr 
-                            83urkdsjfbmxcnlasfgefqlr3q9pweopwoeiriajkghjdsgfsdusioeuwoefdndsjds
-                         </p>
-                      </div>
+            <div>
 
-                      <div>
-                        <form>
-
-                            <div className="mt-4 flex flex-row gap-4">
-                                <div className="flex flex-col gap-2 ">
-                                    <label htmlFor="lost-date">When did you lose it?</label>
-                                    <input
-                                    id="lost-date"
-                                    type="text"
-                                    placeholder="dd-mm-yyyy"
-                                    className="rounded-lg border border-gray-300 p-2 min-w-[350px]"
-                                    />
-                                </div>
-
-                                <div className="flex flex-col gap-2 ml-1">
-                                    <label htmlFor="lost-location">Where did you lose it?</label>
-                                    <input
-                                    id="lost-location"
-                                    type="text"
-                                    placeholder="Location e.g. Library"
-                                    className="rounded-lg border border-gray-300 p-2 min-w-[350px]"
-                                    />
-                                </div>
-                         </div>
-                          
-                        </form>
-                      </div>
-                </div>
-
-
+                <p className="[overflow-wrap:anywhere]"> How do you want to receive your item?</p>
 
                 <div>
-                      {/* small containers on the side  */}
-                      <div className="max-w-md rounded-xl border border-gray-200 bg-white p-35 shadow-md mb-4">
-                        
-                      </div>
-                      <div className="max-w-md rounded-xl border border-gray-200 bg-white p-35 shadow-md mb-4">
-
-                      </div>
-                      <div className="max-w-md rounded-xl border border-gray-200 bg-white p-35 shadow-md mb-4">
-
-                      </div>
-                      <div className="max-w-md rounded-xl border border-gray-200 bg-white p-35 shadow-md">
-
-                      </div>
+                    <label htmlFor="receive-method" className="mb-2 boarder boarder-black rounded-lg p-2">
+                        <input
+                        id="receive-method"
+                        name="receiveMethod"
+                        type="radio"
+                        value="pickup"
+                        className="mr-2"
+                        />
+                        Pick up at the office
+                    </label>
 
                 </div>
 
+                <div className="boarder boarder-black rounded-lg p-2">
+                    <label htmlFor="receive-method" className="mb-2">
+                        <input
+                        id="receive-method"
+                        name="receiveMethod"
+                        type="radio"
+                        value="courier"
+                        className="mr-2"
+                        />
+                        Arrange a courier to pick up the item
+                    </label>
 
-                    
+                </div>
+
+                
+            </div>
+
+
+        
+
+          </form>
+        </div>
+
+        {/* Side cards */}
+        <div className="min-w-0 space-y-4 lg:col-span-2">
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-md">
+            <h3 className="font-semibold">Card 1</h3>
+            <p className="mt-2 [overflow-wrap:anywhere]">
+              Add your information here.
+            </p>
           </div>
 
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-md">
+            <h3 className="font-semibold">Card 2</h3>
+            <p className="mt-2 [overflow-wrap:anywhere]">
+              Add your information here.
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-md">
+            <h3 className="font-semibold">Card 3</h3>
+            <p className="mt-2 [overflow-wrap:anywhere]">
+              Add your information here.
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-md">
+            <h3 className="font-semibold">Card 4</h3>
+            <p className="mt-2 [overflow-wrap:anywhere]">
+              Add your information here.
+            </p>
+          </div>
         </div>
-    )
+      </div>
+    </div>
+  );
 }
 
 export default Claim;
