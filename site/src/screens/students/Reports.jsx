@@ -19,37 +19,35 @@ function Reports() {
         <div className="flex-1 flex flex-col h-full min-h-0 p-4 overflow-y-auto bg-[#eaf1f7]">
 
             {/* Top user section */}
-            <div className="flex justify-end items-center p-2 gap-2">
-                <div className="flex items-center gap-2 bg-[#152862]/10 px-3 py-1 rounded-full font-semibold text-[#152862]">
-                    <FiUser className="text-[#cead5e]" size={22} />
+            <div className="flex justify-between items-center p-2 gap-2">
+                {/* title */}
+                <div>
+                    <h1 className="md:text-2xl font-bold text-[#152862]">My Reports</h1>
+                    <p className="text-gray-600 mt-1 text-sm md:text-md">View and manage your lost and found item reports.</p>
+                </div>
 
-                    <span>
+                {/* user section */}
+                <div className="flex flex-row items-center gap-3">
+                    <div className="flex items-center gap-2 bg-[#152862]/10 px-3 py-1 rounded-full font-semibold text-[#152862]">
+                    <FiUser className="text-[#cead5e] hidden md:block" size={22} />
+                    <span className="text-sm md:text-md">
                         Logged in as:{" "}
-                        <strong className="text-black">4429119</strong>
+                        <strong className="text-black text-sm md:text-md">4429119</strong>
                     </span>
                 </div>
 
                 <CiLogout 
-                    size={26} 
+                    size={30} 
                     color="#f14c53" 
                     className="cursor-pointer"
                 />
+                </div>
+                
             </div>
 
 
             {/* Reports section */}
             <div className="mt-6 px-2">
-
-                {/* Page heading */}
-                <div className="mb-6">
-                    <h1 className="text-2xl font-bold text-[#152862]">
-                        My Reports
-                    </h1>
-
-                    <p className="text-gray-600 mt-1">
-                        View and manage your lost and found item reports.
-                    </p>
-                </div>
 
 
                 {/* Report cards */}
