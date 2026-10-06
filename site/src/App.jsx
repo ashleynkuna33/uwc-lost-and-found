@@ -13,7 +13,7 @@ const MenuBtn = ({ Label, focus, setFocus }) => {
   return (
     <button 
       onClick={() => setFocus(Label)}
-      className={`text-sm md:xt-xl transition-all duration-100 pb-1 cursor-pointer hover:text-[#cead5e]/80 hover:border-b hover:border-b-[#cead5e] ${
+      className={`text-sm sm:text-md md:text-xl transition-all duration-100 pb-1 cursor-pointer hover:text-[#cead5e]/80 hover:border-b hover:border-b-[#cead5e] ${
         isFocused ? "text-[#cead5e] border-b border-b-[#cead5e] font-normal" : "text-gray-200 font-extralight"
       }`}
     >
