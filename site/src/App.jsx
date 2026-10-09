@@ -6,6 +6,8 @@ import { useState } from "react";
 import Authentication from "./components/Authentication";
 
 import { Home, Claim, FindItems, Reports, Help } from "./screens/students";
+import AdminClaim from "./screens/administrators/Claim";
+import AdminReports from "./screens/administrators/Reports";
 
 const MenuBtn = ({ Label, focus, setFocus }) => {
   const isFocused = focus === Label;
@@ -25,6 +27,7 @@ const MenuBtn = ({ Label, focus, setFocus }) => {
 function App() {
 
   const [focus, setFocus] = useState("Home");
+  const isAdmin = false;
 
   return (
     <div className="w-full min-h-screen flex flex-col">
@@ -49,8 +52,15 @@ function App() {
       {/* body */}
       {/* <Authentication /> */}
       { focus === "Home" && <Home setView={setFocus}/>}
-      { focus === "My Reports" && <Reports />}
-      { focus === "Claim Items" && <Claim />}
+      { /*focus === "My Reports" && <Reports />*/}
+      { /*focus === "Claim Items" && <Claim />*/}
+      {focus === "My Reports" && (
+        isAdmin ? <AdminReports /> : <Reports />
+
+      )}
+      {focus === "Claim Items" &&(
+        isAdmin ? <AdminClaim /> : <Claim />
+        )}
       { focus === "Find Items" && <FindItems />}
       { focus === "Help" && <Help />}
 
