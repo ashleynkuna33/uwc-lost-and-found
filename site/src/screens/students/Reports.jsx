@@ -1,404 +1,294 @@
-import { useEffect, useState } from "react";
-import { FiUser, FiImage, FiX } from "react-icons/fi";
-import { CiLogout } from "react-icons/ci";
 
-const steps = [
-  {
-    title: "Report submitted",
-    text: "Your lost or found item details are recorded for review.",
-  },
-  {
-    title: "We review your report",
-    text: "Other students and Lost & Found staff can use your details to identify the item.",
-  },
-  {
-    title: "Get notified",
-    text: "You'll be contacted when there is an update or a possible match.",
-  },
-];
+import { useState } from "react";
+import { FiInbox, FiBell, FiFileText } from "react-icons/fi";
+import { FaPlus, FaMagnifyingGlass } from "react-icons/fa6";
+import { IoDocumentTextOutline } from "react-icons/io5";
+import { FaRegCheckCircle, FaRegClock } from "react-icons/fa";
+import { IoIosArrowDown } from "react-icons/io";
 
-const inputClass =
-  "box-border w-full min-w-0 rounded-lg border border-gray-300 bg-white p-2 focus:border-[#152862] focus:outline-none focus:ring-2 focus:ring-[#152862]/30";
+// stats card
+const StatCard = ({ icon: Icon, iconColor = "#2650aa", iconBgColor = "#eaf1f7", number = 0, text = "",}) => {
+  return (
+    <div className="flex items-center gap-4 rounded-md bg-white px-4 py-3 shadow-md">
+      <div
+        className="rounded-full p-2.5"
+        style={{ backgroundColor: iconBgColor }}
+      >
+        <Icon size={28} color={iconColor} />
+      </div>
 
-function Reports() {
-  const [reportType, setReportType] = useState("Lost");
-  const [image, setImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState("");
-  const [submitMessage, setSubmitMessage] = useState("");
+      <div>
+        <h2 className="text-2xl font-bold text-[#152862]">
+          {number}
+        </h2>
+        <p className="text-sm text-gray-600">{text}</p>
+      </div>
+    </div>
+  );
+};
 
-  // Create an image preview when a file is selected.
-  useEffect(() => {
-    if (!image) {
-      setImagePreview("");
-      return;
-    }
+function Reports({ reports = [], notifications = [], renderReport, reportDetails, onNewReport, onMarkAllRead, }) {
+  const [activeTab, setActiveTab] = useState("All");
+  const [search, setSearch] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("All");
 
-    const previewUrl = URL.createObjectURL(image);
-    setImagePreview(previewUrl);
 
-    return () => {
-      URL.revokeObjectURL(previewUrl);
-    };
-  }, [image]);
+  const totalReports = reports.length;
+  const openReports = reports.filter((report) => report.status?.toLowerCase() === "open").length;
+  const returnedReports = reports.filter((report) => report.status?.toLowerCase() === "returned").length;
+  const lostReports = reports.filter((report) => report.type?.toLowerCase() === "lost").length;
+  const foundReports = reports.filter((report) => report.type?.toLowerCase() === "found").length;
+  const unreadCount = notifications.filter((notification) => !notification.read).length;
 
-  const handleImageChange = (e) => {
-    const selectedFile = e.target.files?.[0];
+  // Available status filters
+  const statuses = [
+    ...new Set(reports.map((report) => report.status).filter(Boolean)),
+  ];
 
-    if (!selectedFile) {
-      setImage(null);
-      return;
-    }
+  // Filter reports
+  const filteredReports = reports.filter((report) => {
+    const type = String(report.type ?? "").toLowerCase();
+    const status = String(report.status ?? "").toLowerCase();
+    const itemName = String(report.itemName ?? report.title ?? report.name ?? "").toLowerCase();
+    const reportId = String(report.id ?? "").toLowerCase();
+    const query = search.trim().toLowerCase();
+    const matchesTab =activeTab === "All" || type === activeTab.toLowerCase();
+    const matchesSearch = itemName.includes(query) || reportId.includes(query);
+    const matchesStatus = selectedStatus === "All" || status === selectedStatus.toLowerCase();
+    return matchesTab && matchesSearch && matchesStatus;
+  });
 
-    if (!selectedFile.type.startsWith("image/")) {
-      setSubmitMessage("Please select a valid image file.");
-      e.target.value = "";
-      setImage(null);
-      return;
-    }
-
-    setSubmitMessage("");
-    setImage(selectedFile);
-  };
-
-  const removeImage = () => {
-    setImage(null);
-
-    // Allow the same image to be selected again.
-    const fileInput = document.getElementById("report-image");
-
-    if (fileInput) {
-      fileInput.value = "";
-    }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const formData = new FormData(e.currentTarget);
-    formData.set("reportType", reportType);
-
-    if (image) {
-      formData.set("image", image);
-    }
-
-    // TODO: Send formData to your Spring Boot backend.
-    console.log("Report submitted:", Object.fromEntries(formData.entries()));
-
-    setSubmitMessage(
-      "Your report is ready. Connect the backend to submit it successfully."
-    );
-  };
+  const tabs = [
+    { name: "All", count: totalReports },
+    { name: "Lost", count: lostReports },
+    { name: "Found", count: foundReports },
+  ];
 
   return (
     <div className="min-h-screen w-full bg-[#eaf1f7] p-4 md:p-6">
       <div className="flex w-full flex-col">
-        {/* User section */}
-        <div className="flex flex-wrap items-center justify-between gap-3">
+
+        {/* title */}
+        <div className="flex items-center justify-between gap-3">
           <div>
-            <h1 className="text-xl font-bold text-[#152862] md:text-2xl">
-              Report an Item
-            </h1>
-            <p className="mt-1 text-sm text-gray-600">
-              Help reunite lost items with their owners.
-            </p>
+            <h1 className="text-2xl font-bold text-[#152862] md:text-3xl">My Reports</h1>
+            <p className="mt-1 text-sm text-gray-600 md:text-base">Manage your lost and found reports and respond to updates.</p>
           </div>
 
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            <div className="flex min-w-0 items-center gap-2 rounded-full bg-[#152862]/10 px-3 py-2 font-semibold text-[#152862]">
-              <FiUser className="shrink-0 text-[#cead5e]" size={22} />
-              <span className="truncate text-sm">
-                Logged in as:{" "}
-                <strong className="text-black">4429119</strong>
-              </span>
-            </div>
-
-            <button
-              type="button"
-              aria-label="Log out"
-              className="rounded-full p-1 hover:bg-red-50"
-            >
-              <CiLogout size={26} color="#f14c53" />
-            </button>
-          </div>
+          <button type="button" onClick={onNewReport} className="flex shrink-0 cursor-pointer items-center gap-2 rounded-md bg-[#152862] px-3 py-2.5 text-white shadow-sm transition-all duration-150 hover:opacity-90" >
+            <FaPlus size={17} />
+            <span className="hidden text-sm font-semibold sm:block">New Report</span>
+          </button>
         </div>
 
-        {/* Main body */}
-        <div className="mt-4 grid grid-cols-1 items-start gap-4 lg:grid-cols-5">
-          {/* Report form */}
-          <div className="min-w-0 rounded-xl border border-gray-200 bg-white p-4 shadow-lg md:p-6 lg:col-span-3">
-            <h2 className="text-xl font-bold text-[#152862] md:text-2xl">
-              Submit a Report
-            </h2>
+        {/* quick statistics */}
+        <div className="my-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <StatCard icon={IoDocumentTextOutline} iconColor="#2650aa" iconBgColor="#eaf1f7" number={totalReports} text="Total reports"/>
+          <StatCard icon={FaRegClock} iconColor="#663300" iconBgColor="#fff0d9" number={openReports} text="Open reports"/>
+          <StatCard icon={FaRegCheckCircle} iconColor="#01461c" iconBgColor="#e4f4ea" number={returnedReports} text="Returned items"/>
+        </div>
 
-            <p className="mt-2 text-sm text-gray-500">
-              Provide accurate details so others can help identify the item.
-            </p>
+        {/* body */}
+        <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-5">
 
-            <form onSubmit={handleSubmit} className="mt-6 space-y-5">
-              {/* Report type */}
-              <fieldset>
-                <legend className="mb-2 font-medium">
-                  What would you like to report?
-                </legend>
+          {/* left */}
+          <section className="rounded-lg bg-white p-4 shadow-md lg:col-span-3 md:p-5">
+            <h2 className="text-xl font-bold text-[#152862]">My Reports</h2>
 
-                <div className="grid grid-cols-2 gap-3">
-                  {["Lost", "Found"].map((type) => (
-                    <label
-                      key={type}
-                      className={`flex cursor-pointer items-center justify-center gap-2 rounded-lg border p-3 font-medium transition ${
-                        reportType === type
-                          ? "border-[#152862] bg-[#152862]/5 text-[#152862]"
-                          : "border-gray-300 text-gray-700"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="reportType"
-                        value={type}
-                        checked={reportType === type}
-                        onChange={() => setReportType(type)}
-                        className="accent-[#152862]"
-                      />
-                      {type} item
-                    </label>
+            {/* tabs */}
+            <div className="mt-4 flex gap-5 border-b border-gray-200">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.name}
+                  type="button"
+                  onClick={() => setActiveTab(tab.name)}
+                  className={`cursor-pointer border-b-[3px] px-3 pb-2 text-sm font-semibold transition-colors ${
+                    activeTab === tab.name
+                      ? "border-[#dba621] text-[#152862]"
+                      : "border-transparent text-gray-500 hover:text-[#152862]"
+                  }`}
+                >
+                  {tab.name} ({tab.count})
+                </button>
+              ))}
+            </div>
+
+            {/* SEARCH AND STATUS FILTER */}
+            <div className="my-4 flex flex-col gap-3 sm:flex-row">
+
+              {/* search input */}
+              <div className="flex min-w-0 flex-1 items-center gap-3 rounded-md border border-gray-300 px-3 py-2.5 focus-within:border-[#2650aa]">
+                <FaMagnifyingGlass size={17} className="shrink-0 text-gray-500"/>
+                <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by item or report ID..." aria-label="Search reports" className="w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-gray-400"/>
+              </div>
+
+              {/* status */}
+              <div className="relative w-full sm:w-44">
+                <select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)} aria-label="Filter reports by status" className="w-full cursor-pointer appearance-none rounded-md border border-gray-300 bg-white px-3 py-2.5 pr-9 text-sm text-gray-700 outline-none focus:border-[#2650aa]"
+                >
+                  <option value="All">All statuses</option>
+                  {statuses.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
                   ))}
-                </div>
-              </fieldset>
+                </select>
 
-              {/* Item name */}
-              <div className="flex min-w-0 flex-col gap-2">
-                <label htmlFor="item-name">Item name:</label>
-                <input
-                  id="item-name"
-                  name="itemName"
-                  type="text"
-                  placeholder="e.g. Samsung phone, student card or keys"
-                  className={inputClass}
-                  required
-                />
+                <IoIosArrowDown size={17} className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[#152862]"/>
               </div>
+            </div>
 
-              {/* Date and location */}
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="flex min-w-0 flex-col gap-2">
-                  <label htmlFor="item-date">
-                    {reportType === "Lost"
-                      ? "When did you lose it?"
-                      : "When did you find it?"}
-                  </label>
-                  <input
-                    id="item-date"
-                    name="itemDate"
-                    type="date"
-                    max={new Date().toLocaleDateString("en-CA")}
-                    className={inputClass}
-                    required
-                  />
-                </div>
+            {/* data */}
+            <div className="flex flex-col gap-3">
 
-                <div className="flex min-w-0 flex-col gap-2">
-                  <label htmlFor="item-location">
-                    {reportType === "Lost"
-                      ? "Where did you lose it?"
-                      : "Where did you find it?"}
-                  </label>
-                  <input
-                    id="item-location"
-                    name="location"
-                    type="text"
-                    placeholder="e.g. UWC Library"
-                    className={inputClass}
-                    required
-                  />
-                </div>
-              </div>
+              {filteredReports.length === 0 ? (
+                /* EMPTY STATE */
+                <div className="flex min-h-72 flex-col items-center justify-center px-4 py-10 text-center">
 
-              {/* Image upload */}
-              <div className="flex min-w-0 flex-col gap-2">
-                <label htmlFor="report-image">Item photo:</label>
-
-                <p className="text-sm text-gray-500">
-                  Upload a photo to help others recognise the item. Images are
-                  optional.
-                </p>
-
-                <input
-                  id="report-image"
-                  name="image"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className={inputClass}
-                />
-
-                {/* Image preview */}
-                {imagePreview && (
-                  <div className="mt-2 rounded-xl border border-gray-200 bg-gray-50 p-3">
-                    <div className="mb-3 flex items-center justify-between gap-2">
-                      <div className="flex min-w-0 items-center gap-2 text-sm font-medium text-[#152862]">
-                        <FiImage size={18} />
-                        <span className="truncate">{image.name}</span>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={removeImage}
-                        aria-label="Remove uploaded image"
-                        className="shrink-0 rounded-full p-2 text-red-500 hover:bg-red-50"
-                      >
-                        <FiX size={18} />
-                      </button>
-                    </div>
-
-                    <img
-                      src={imagePreview}
-                      alt="Preview of the reported item"
-                      className="max-h-72 w-full rounded-lg object-contain"
+                  <div className="mb-4 rounded-full bg-[#eaf1f7] p-5">
+                    <FiInbox
+                      size={42}
+                      className="text-[#2650aa]"
                     />
-
-                    <p className="mt-2 text-xs text-gray-500">
-                      Image preview
-                    </p>
                   </div>
+
+                  <h3 className="text-lg font-bold text-[#152862]">
+                    {totalReports === 0 ? "No reports yet" : "No matching reports"} </h3>
+                  <p className="mt-2 max-w-sm text-sm leading-6 text-gray-500">
+                    {totalReports === 0
+                      ? "You haven't submitted any lost or found reports yet. Create your first report to get started."
+                      : "No reports match your current filters. Try changing your search or filter options."}
+                  </p>
+
+                  {totalReports === 0 && (
+                    <button type="button" onClick={onNewReport} className="mt-5 flex cursor-pointer items-center gap-2 rounded-md bg-[#152862] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#233e83]"
+                    >
+                      <FaPlus size={13} /> Create a Report</button>
+                  )}
+
+                  {totalReports > 0 && (
+                    <button type="button" onClick={() => { setActiveTab("All"); setSearch(""); setSelectedStatus("All");}} className="mt-4 cursor-pointer text-sm font-semibold text-[#2650aa] hover:underline"
+                    >Clear filters</button>
+                    )}
+                </div>
+              ) : (
+                // components
+                filteredReports.map((report, index) => (
+                  <div key={report.id ?? index}>
+                    {renderReport
+                      ? renderReport(report)
+                      : null}
+                  </div>
+                ))
+              )}
+
+            </div>
+
+            {/* footer */}
+            <div className="mt-4 border-t border-gray-100 pt-3">
+              <p className="text-xs text-gray-500">
+                Showing {filteredReports.length} of {totalReports} reports
+              </p>
+            </div>
+          </section>
+
+          {/* current report item */}
+          <aside className="flex flex-col gap-4 lg:col-span-2">
+
+            {/* notification */}
+            <section className="rounded-lg bg-white p-4 shadow-md md:p-5">
+
+              {/* NOTIFICATIONS HEADER */}
+              <div className="flex items-center justify-between gap-2 border-b border-gray-200 pb-3">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-bold text-[#152862]">Notifications</h2>
+                  {unreadCount > 0 && (
+                    <span className="rounded-full bg-red-500 px-2 py-0.5 text-xs font-semibold text-white">
+                      {unreadCount} new
+                    </span>
+                  )}
+                </div>
+
+                {unreadCount > 0 && onMarkAllRead && (
+                  <button type="button" onClick={onMarkAllRead} className="cursor-pointer text-xs font-medium text-[#2650aa] underline"
+                  >Mark all read</button>
                 )}
               </div>
 
-              {/* Description */}
-              <div className="flex min-w-0 flex-col gap-2">
-                <label htmlFor="item-description">Item description:</label>
-
-                <p className="text-sm text-gray-500">
-                  Describe the item's colour, brand, size, identifying marks,
-                  or anything else that could help someone recognise it.
-                </p>
-
-                <textarea
-                  id="item-description"
-                  name="description"
-                  placeholder="Provide details about the item..."
-                  className={`${inputClass} h-40 resize-y md:h-48`}
-                  required
-                />
-              </div>
-
-              {/* Contact details */}
-              <div className="flex min-w-0 flex-col gap-2">
-                <label htmlFor="contact-number">Contact number:</label>
-                <input
-                  id="contact-number"
-                  name="contactNumber"
-                  type="tel"
-                  placeholder="Enter your cellphone number"
-                  className={inputClass}
-                  required
-                />
-              </div>
-
-              {/* Feedback message */}
-              {submitMessage && (
-                <p
-                  role="status"
-                  className="break-words rounded-lg bg-[#152862]/5 p-3 text-sm text-[#152862]"
-                >
-                  {submitMessage}
-                </p>
-              )}
-
-              {/* Submit button */}
-              <div className="flex justify-center pt-2">
-                <button
-                  type="submit"
-                  className="w-full rounded-lg bg-[#152862] px-8 py-2 font-semibold text-white transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[#152862] focus:ring-offset-2 sm:w-auto"
-                >
-                  Submit Report
-                </button>
-              </div>
-            </form>
-          </div>
-
-          {/* Right-side cards */}
-          <div className="min-w-0 space-y-4 lg:col-span-2">
-            {/* Reporting guide */}
-            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-md md:p-6">
-              <h2 className="text-lg font-bold text-black">
-                Reporting Guide
-              </h2>
-
-              <div className="mt-3 space-y-3 text-sm leading-relaxed text-gray-600">
-                <p>
-                  <strong className="text-[#152862]">Lost an item?</strong>
-                  <br />
-                  Report where and when you last saw it. Include details that
-                  could help identify your belongings.
-                </p>
-
-                <p>
-                  <strong className="text-[#152862]">Found an item?</strong>
-                  <br />
-                  Report where and when you found it. Avoid sharing sensitive
-                  identifying details publicly.
-                </p>
-
-                <p>
-                  <strong className="text-[#152862]">Add a photo</strong>
-                  <br />
-                  A clear image can make it easier for others to recognise the
-                  item.
-                </p>
-              </div>
-            </div>
-
-            {/* What happens next */}
-            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-md md:p-6">
-              <h2 className="mb-5 text-lg font-bold text-black">
-                What Happens Next?
-              </h2>
-
-              <ol>
-                {steps.map((step, index) => (
-                  <li
-                    key={step.title}
-                    className="relative flex gap-4 pb-6 last:pb-0"
-                  >
-                    {index < steps.length - 1 && (
-                      <span className="absolute bottom-1 left-4 top-10 w-0.5 -translate-x-1/2 bg-black/20" />
-                    )}
-
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#152862] text-sm font-medium text-white ring-1 ring-[#152862]/20">
-                      {index + 1}
-                    </span>
-
-                    <div className="min-w-0">
-                      <h3 className="font-semibold text-black">
-                        {step.title}
-                      </h3>
-                      <p className="mt-0.5 text-sm leading-relaxed text-gray-500">
-                        {step.text}
-                      </p>
+              {/* content */}
+              <div>
+                {notifications.length === 0 ? (
+                  <div className="flex min-h-48 flex-col items-center justify-center px-3 py-8 text-center">
+                    <div className="mb-3 rounded-full bg-[#eaf1f7] p-4">
+                      <FiBell size={30} className="text-[#2650aa]"/>
                     </div>
-                  </li>
-                ))}
-              </ol>
-            </div>
+                    <h3 className="text-sm font-semibold text-[#152862]">No notifications yet</h3>
+                    <p className="mt-1 max-w-xs text-xs leading-5 text-gray-500"> You're all caught up! Updates about your reports and claims will appear here.</p>
+                  </div>
+                ) : (
+                  <div className="divide-y divide-gray-100">
+                    {notifications.map((notification, index) => (
+                      <div
+                        key={notification.id ?? index}
+                        className="flex gap-3 py-3"
+                      >
+                        <div className="pt-1.5">
+                          <span
+                            className={`block h-2.5 w-2.5 rounded-full ${
+                              notification.read
+                                ? "bg-gray-300"
+                                : "bg-blue-500"
+                            }`}
+                          />
+                        </div>
 
-            {/* Help card */}
-            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-md md:p-6">
-              <h2 className="mb-3 text-lg font-bold text-black">
-                Need Help?
-              </h2>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-start justify-between gap-2">
+                            <h4 className="text-sm font-semibold text-[#152862]">
+                              {notification.title}
+                            </h4>
 
-              <p className="text-sm leading-relaxed text-gray-600">
-                If you need help reporting an item or believe you have found
-                something that belongs to another student, contact your
-                campus Lost &amp; Found office.
-              </p>
+                            <span className="shrink-0 text-xs text-gray-500">
+                              {notification.time}
+                            </span>
+                          </div>
 
-              <p className="mt-3 text-sm text-gray-500">
-                Contact details can be added here once your campus office
-                information is confirmed.
-              </p>
-            </div>
-          </div>
+                          <p className="mt-1 text-xs text-gray-600">
+                            {notification.message}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </section>
+
+            {/* REPORT DETAILS */}
+            <section className="rounded-lg bg-white p-4 shadow-md md:p-5">
+
+              <h2 className="border-b border-gray-200 pb-3 text-lg font-bold text-[#152862]">Report details</h2>
+
+              {/* details placeholder */}
+              {reportDetails ? (
+                reportDetails
+              ) : (
+                <div className="flex min-h-64 flex-col items-center justify-center px-4 py-8 text-center">
+
+                  <div className="mb-4 rounded-full bg-[#eaf1f7] p-4">
+                    <FiFileText size={32} className="text-[#2650aa]"/>
+                  </div>
+                  <h3 className="text-sm font-semibold text-[#152862]">No report selected</h3>
+                  <p className="mt-2 max-w-xs text-xs leading-5 text-gray-500">
+                    {totalReports === 0
+                      ? "Once you've submitted a report, you can view and manage its details here."
+                      : "Select a report from your list to view or edit its details."}
+                  </p>
+                </div>
+              )}
+            </section>
+
+          </aside>
         </div>
       </div>
     </div>
