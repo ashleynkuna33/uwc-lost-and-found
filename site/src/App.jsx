@@ -27,7 +27,7 @@ const MenuBtn = ({ Label, focus, setFocus }) => {
 function App() {
 
   const [focus, setFocus] = useState("Home");
-  const isAdmin = false;
+  const isAdmin = true;
 
   return (
     <div className="w-full min-h-screen flex flex-col">
