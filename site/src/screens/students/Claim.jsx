@@ -1,299 +1,325 @@
 import { useState } from "react";
-import { FiUser } from "react-icons/fi";
-import { CiLogout } from "react-icons/ci";
+import {
+  FiInbox,
+  FiSearch,
+  FiPlus,
+  FiClock,
+  FiCheckCircle,
+  FiFileText,
+} from "react-icons/fi";
+import ItemsTable from "../../components/ItemsTable";
 
-// Dummy data
-const items = [
+const initialClaims = [
   {
-    id: 1,
-    itemName: "Sumsang S26 Ultra",
-    location: "Student Center",
-    collection: "CPS Office",
+    claimId: "C001",
+    itemName: "Samsung phone",
+    description: "Black Samsung Galaxy smartphone",
+    submitted: "08 Oct 2026",
+    status: "pending",
+  },
+  {
+    claimId: "C002",
+    itemName: "Black backpack",
+    description: "Black nylon backpack with a front pocket",
+    submitted: "07 Oct 2026",
+    status: "approved",
+  },
+  {
+    claimId: "C003",
+    itemName: "Silver keys",
+    description: "Three keys with a blue keyring",
+    submitted: "01 Oct 2026",
+    status: "rejected",
   },
 ];
 
-const steps = [
-  {
-    title: "We review your claim",
-    text: "Staff compare your details with the item within 3–5 business days.",
+const statuses = {
+  pending: {
+    label: "Pending",
+    color: "bg-amber-100 text-amber-700",
   },
-  {
-    title: "You get an email",
-    text: "We'll tell you if it's approved or if we need more information.",
+  approved: {
+    label: "Approved",
+    color: "bg-blue-100 text-blue-700",
   },
-  {
-    title: "Collect your item",
-    text: "Show photo ID at the front desk within 14 days.",
+  rejected: {
+    label: "Rejected",
+    color: "bg-red-100 text-red-700",
   },
-];
+};
 
-const inputClass =
-  "box-border w-full min-w-0 rounded-lg border border-gray-300 bg-white p-2 focus:border-[#152862] focus:outline-none focus:ring-2 focus:ring-[#152862]/30";
-
-function Claim() {
-  const [agreed, setAgreed] = useState(false);
-  const [receiveMethod, setReceiveMethod] = useState("pickup");
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!agreed) return;
-    // TODO: send the claim to your backend here
-    console.log("Claim submitted", { receiveMethod });
-  };
-
+function StatCard({ icon: Icon, number, label, color }) {
   return (
-    <div className="min-h-screen w-full bg-[#eaf1f7] p-4 md:p-6">
-      <div className="flex w-full flex-col">
-        {/* User section */}
-        <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-end">
-          <div className="flex min-w-0 items-center gap-2 rounded-full bg-[#152862]/10 px-3 py-2 font-semibold text-[#152862]">
-            <FiUser className="shrink-0 text-[#cead5e]" size={22} />
-            <span className="truncate">
-              Logged in as: <strong className="text-black">4429119</strong>
-            </span>
-          </div>
+    <div className="flex items-center gap-4 rounded-xl bg-white p-5 shadow-sm">
+      <div className={`rounded-full p-3 ${color}`}>
+        <Icon size={25} />
+      </div>
 
-          <button
-            type="button"
-            aria-label="Log out"
-            className="rounded-full p-1 hover:bg-red-50"
-          >
-            <CiLogout size={26} color="#f14c53" />
-          </button>
-        </div>
-
-        {/* Body section */}
-        <div className="mt-4 grid grid-cols-1 items-start gap-4 lg:grid-cols-5">
-          {/* Main card */}
-          <div className="min-w-0 rounded-xl border border-gray-200 bg-white p-4 shadow-lg md:p-6 lg:col-span-3">
-            <h1 className="text-xl font-bold text-[#152862] md:text-2xl">
-              Claim your item
-            </h1>
-
-            <form onSubmit={handleSubmit} className="mt-6 space-y-5">
-              {/* Date + location */}
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="flex min-w-0 flex-col gap-2">
-                  <label htmlFor="lost-date">When did you lose it?</label>
-                  <input
-                    id="lost-date"
-                    name="lostDate"
-                    type="date"
-                    className={inputClass}
-                  />
-                </div>
-
-                <div className="flex min-w-0 flex-col gap-2">
-                  <label htmlFor="lost-location">Where did you lose it?</label>
-                  <input
-                    id="lost-location"
-                    name="lostLocation"
-                    type="search"
-                    placeholder="Location e.g. Library"
-                    className={inputClass}
-                  />
-                </div>
-              </div>
-
-              {/* Attachments */}
-              <div className="flex min-w-0 flex-col gap-2">
-                <label htmlFor="lost-attachment">Attachments:</label>
-                <input
-                  id="lost-attachment"
-                  name="lostAttachment"
-                  type="file"
-                  className={inputClass}
-                />
-              </div>
-
-              {/* Description */}
-              <div className="flex min-w-0 flex-col gap-2">
-                <label htmlFor="lost-description">Description:</label>
-                <p className="text-sm text-gray-500 [overflow-wrap:anywhere]">
-                  Please provide a detailed description of the lost item,
-                  including any distinguishing features or identifying marks.
-                  This will help us in locating and returning your item to you.
-                </p>
-                <textarea
-                  id="lost-description"
-                  name="lostDescription"
-                  placeholder="Provide a detailed description of the lost item."
-                  className={`${inputClass} h-40 resize-y md:h-60`}
-                />
-              </div>
-
-              {/* Receive method */}
-              <fieldset className="min-w-0">
-                <legend className="mb-2 [overflow-wrap:anywhere]">
-                  How do you want to receive your item?
-                </legend>
-
-                <div className="space-y-2">
-                  <label
-                    htmlFor="receive-pickup"
-                    className={`flex cursor-pointer items-start gap-2 rounded-lg border p-3 ${
-                      receiveMethod === "pickup"
-                        ? "border-[#152862] bg-[#152862]/5"
-                        : "border-gray-300"
-                    }`}
-                  >
-                    <input
-                      id="receive-pickup"
-                      name="receiveMethod"
-                      type="radio"
-                      value="pickup"
-                      checked={receiveMethod === "pickup"}
-                      onChange={(e) => setReceiveMethod(e.target.value)}
-                      className="mt-1 shrink-0 text-[#152862] focus:ring-[#152862]"
-                    />
-                    <span className="[overflow-wrap:anywhere]">
-                      Pick up at the office
-                    </span>
-                  </label>
-
-                  <label
-                    htmlFor="receive-courier"
-                    className={`flex cursor-pointer items-start gap-2 rounded-lg border p-3 ${
-                      receiveMethod === "courier"
-                        ? "border-[#152862] bg-[#152862]/5"
-                        : "border-gray-300"
-                    }`}
-                  >
-                    <input
-                      id="receive-courier"
-                      name="receiveMethod"
-                      type="radio"
-                      value="courier"
-                      checked={receiveMethod === "courier"}
-                      onChange={(e) => setReceiveMethod(e.target.value)}
-                      className="mt-1 shrink-0 text-[#152862] focus:ring-[#152862]"
-                    />
-                    <span className="[overflow-wrap:anywhere]">
-                      Arrange a courier to pick up the item
-                    </span>
-                  </label>
-                </div>
-              </fieldset>
-
-              {/* Contact number */}
-              <div className="flex min-w-0 flex-col gap-2">
-                <label htmlFor="contact-number">Contact Number:</label>
-                <input
-                  id="contact-number"
-                  name="contactNumber"
-                  type="tel"
-                  placeholder="Enter your cellphone number"
-                  className={inputClass}
-                />
-              </div>
-
-              {/* Terms */}
-              <label htmlFor="terms" className="flex items-start gap-2">
-                <input
-                  id="terms"
-                  name="terms"
-                  type="checkbox"
-                  checked={agreed}
-                  onChange={(e) => setAgreed(e.target.checked)}
-                  className="mt-1 shrink-0 rounded border-gray-300 text-[#152862] focus:ring-[#152862] focus:ring-offset-0"
-                />
-                <span className="text-sm text-gray-700 [overflow-wrap:anywhere]">
-                  I confirm that this item belongs to me and I agree to the
-                  terms and conditions.
-                </span>
-              </label>
-
-              {/* Submit button (centered) */}
-              <div className="flex justify-center pt-2">
-                <button
-                  type="submit"
-                  disabled={!agreed}
-                  className="w-full rounded-lg bg-[#152862] px-8 py-2 font-semibold text-white transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[#152862] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
-                >
-                  Submit Claim
-                </button>
-              </div>
-            </form>
-          </div>
-
-          {/* Side cards */}
-          <div className="min-w-0 space-y-4 lg:col-span-2">
-            {/* Item card */}
-            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-md md:p-6">
-              <h2 className="font-semibold">Item</h2>
-              {items.map((item) => (
-                <div key={item.id} className="mt-2">
-                  <h3 className="mb-2 font-medium text-[#152862] [overflow-wrap:anywhere]">
-                    {item.itemName}
-                  </h3>
-                  <p className="text-sm text-gray-700">
-                    Location: {item.location}
-                  </p>
-                  <p className="text-sm text-gray-700">
-                    Collection: {item.collection}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            {/* Status card */}
-            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-md md:p-6">
-              <h2 className="mb-5 text-lg font-bold text-black">Status</h2>
-
-              <ol>
-                {steps.map((step, i) => (
-                  <li
-                    key={step.title}
-                    className="relative flex gap-4 pb-6 last:pb-0"
-                  >
-                    {/* connector line (skipped on the last step) */}
-                    {i < steps.length - 1 && (
-                      <span className="absolute bottom-1 left-4 top-10 w-0.5 -translate-x-1/2 bg-black/20" />
-                    )}
-
-                    {/* number circle */}
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#152862] text-sm font-medium text-white ring-1 ring-[#152862]/20">
-                      {i + 1}
-                    </span>
-
-                    {/* text */}
-                    <div className="min-w-0">
-                      <h3 className="font-semibold text-black">{step.title}</h3>
-                      <p className="mt-0.5 text-sm leading-relaxed text-gray-500">
-                        {step.text}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            </div>
-
-            {/* Need help card */}
-            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-md md:p-6">
-              <h2 className="mb-3 text-lg font-bold text-black">Need help?</h2>
-
-              <p className="text-black">
-                Lost &amp; Found office, library ground floor.
-              </p>
-
-              <p className="mt-2 text-black [overflow-wrap:anywhere]">
-                <a
-                  href="mailto:lostfound@campus.edu"
-                  className="text-emerald-600 underline underline-offset-2 hover:text-emerald-500"
-                >
-                  lostfound@campus.edu
-                </a>
-                {" · "}
-                <a href="tel:+27215550142" className="hover:underline">
-                  021 555 0142
-                </a>
-              </p>
-            </div>
-          </div>
-        </div>
+      <div>
+        <p className="text-3xl font-bold text-[#152862]">{number}</p>
+        <p className="text-sm text-gray-500">{label}</p>
       </div>
     </div>
   );
 }
 
-export default Claim;
+export default function Claims({ onNewClaim }) {
+  const [claims, setClaims] = useState(initialClaims);
+  const [activeTab, setActiveTab] = useState("All");
+  const [search, setSearch] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("All");
+  const [selectedClaim, setSelectedClaim] = useState(null);
+
+  const activeCount = claims.filter(
+    (claim) => claim.status === "pending" || claim.status === "approved"
+  ).length;
+
+  const historyCount = claims.filter(
+    (claim) => claim.status === "rejected"
+  ).length;
+
+  const approvedCount = claims.filter(
+    (claim) => claim.status === "approved"
+  ).length;
+
+  const tabs = [
+    { name: "All", count: claims.length },
+    { name: "Active", count: activeCount },
+    { name: "History", count: historyCount },
+  ];
+
+  const filteredClaims = claims.filter((claim) => {
+    const query = search.trim().toLowerCase();
+
+    const matchesSearch = [
+      claim.itemName,
+      claim.claimId,
+      claim.description,
+    ].some((value) =>
+      String(value ?? "").toLowerCase().includes(query)
+    );
+
+    const matchesTab =
+      activeTab === "All" ||
+      (activeTab === "Active" &&
+        ["pending", "approved"].includes(claim.status)) ||
+      (activeTab === "History" && claim.status === "rejected");
+
+    const matchesStatus =
+      selectedStatus === "All" || claim.status === selectedStatus;
+
+    return matchesSearch && matchesTab && matchesStatus;
+  });
+
+  function removeClaim(claim) {
+    if (!window.confirm(`Remove your claim for ${claim.itemName}?`)) {
+      return;
+    }
+
+    setClaims((current) =>
+      current.filter((item) => item.claimId !== claim.claimId)
+    );
+
+    if (selectedClaim?.claimId === claim.claimId) {
+      setSelectedClaim(null);
+    }
+  }
+
+  function clearFilters() {
+    setSearch("");
+    setActiveTab("All");
+    setSelectedStatus("All");
+  }
+
+  function handleNewClaim() {
+    if (onNewClaim) {
+      onNewClaim();
+    } else {
+      window.alert("Connect this button to your claim form.");
+    }
+  }
+
+  return (
+    <main className="min-h-screen bg-[#eaf1f7] p-4 text-[#152862] md:p-8">
+      <div className="mx-auto">
+        {/* Heading */}
+        <header className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold">My Claims</h1>
+            <p className="mt-2 text-sm text-gray-500">
+              Track your claims and reclaim what belongs to you.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleNewClaim}
+            className="flex items-center gap-2 rounded-lg bg-[#152862] px-5 py-3 text-sm font-semibold text-white hover:bg-[#233e83]"
+          >
+            <FiPlus size={20} />
+            Make a claim
+          </button>
+        </header>
+
+        {/* Statistics */}
+        <div className="my-6 grid gap-4 sm:grid-cols-3">
+          <StatCard
+            icon={FiFileText}
+            number={activeCount}
+            label="Active claims"
+            color="bg-amber-50 text-amber-600"
+          />
+          <StatCard
+            icon={FiClock}
+            number={historyCount}
+            label="Historical claims"
+            color="bg-blue-50 text-blue-600"
+          />
+          <StatCard
+            icon={FiCheckCircle}
+            number={approvedCount}
+            label="Approved claims"
+            color="bg-green-50 text-green-600"
+          />
+        </div>
+
+        <section className="overflow-hidden rounded-xl bg-white shadow-sm">
+          {/* Tabs */}
+          <div className="flex gap-2 border-b border-gray-200 px-4 sm:gap-5">
+            {tabs.map((tab) => (
+              <button
+                key={tab.name}
+                type="button"
+                onClick={() => setActiveTab(tab.name)}
+                aria-pressed={activeTab === tab.name}
+                className={`border-b-4 px-3 py-4 text-sm font-semibold ${
+                  activeTab === tab.name
+                    ? "border-[#dba621] text-[#152862]"
+                    : "border-transparent text-gray-500 hover:text-[#152862]"
+                }`}
+              >
+                {tab.name} ({tab.count})
+              </button>
+            ))}
+          </div>
+
+          {/* Search and status filter */}
+          <div className="flex flex-col gap-3 p-5 sm:flex-row">
+            <div className="flex flex-1 items-center gap-3 rounded-lg border border-gray-300 px-3 focus-within:border-blue-600">
+              <FiSearch size={19} className="shrink-0 text-gray-400" />
+
+              <input
+                type="search"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search by item name or claim ID..."
+                aria-label="Search claims"
+                className="w-full min-w-0 bg-transparent py-3 text-sm outline-none"
+              />
+            </div>
+
+            <select
+              value={selectedStatus}
+              onChange={(event) => setSelectedStatus(event.target.value)}
+              aria-label="Filter claims by status"
+              className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm sm:w-48"
+            >
+              <option value="All">All statuses</option>
+
+              {Object.entries(statuses).map(([value, status]) => (
+                <option key={value} value={value}>
+                  {status.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Reusable table component */}
+          <ItemsTable
+            claims={filteredClaims}
+            statuses={statuses}
+            onView={setSelectedClaim}
+            onRemove={removeClaim}
+          />
+
+          {/* Empty state */}
+          {filteredClaims.length === 0 && (
+            <div className="flex flex-col items-center px-5 py-12 text-center">
+              <FiInbox size={42} className="mb-3 text-blue-400" />
+
+              <h2 className="font-semibold">
+                {claims.length === 0 ? "No claims yet" : "No matching claims"}
+              </h2>
+
+              <p className="mt-2 text-sm text-gray-500">
+                {claims.length === 0
+                  ? "Make a claim for a found item that belongs to you."
+                  : "Try a different search or clear your filters."}
+              </p>
+
+              {claims.length > 0 && (
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="mt-4 text-sm font-semibold text-blue-600 hover:underline"
+                >
+                  Clear filters
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Footer */}
+          <p className="mx-5 border-t border-gray-100 py-4 text-xs text-gray-500">
+            Showing {filteredClaims.length} of {claims.length} claims
+          </p>
+        </section>
+
+        {/* Selected claim details */}
+        {selectedClaim && (
+          <section
+            aria-label="Claim details"
+            className="mt-5 rounded-xl bg-white p-5 shadow-sm"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <h2 className="text-xl font-bold">Claim details</h2>
+
+              <button
+                type="button"
+                onClick={() => setSelectedClaim(null)}
+                className="rounded-lg border border-gray-200 px-3 py-2 text-sm hover:bg-gray-50"
+              >
+                Close
+              </button>
+            </div>
+
+            <h3 className="mt-4 font-semibold">{selectedClaim.itemName}</h3>
+            <p className="mt-1 text-sm text-gray-500">
+              {selectedClaim.description}
+            </p>
+
+            <dl className="mt-4 grid gap-4 text-sm sm:grid-cols-3">
+              <div>
+                <dt className="text-gray-500">Claim ID</dt>
+                <dd className="mt-1 font-medium">{selectedClaim.claimId}</dd>
+              </div>
+
+              <div>
+                <dt className="text-gray-500">Submitted</dt>
+                <dd className="mt-1 font-medium">{selectedClaim.submitted}</dd>
+              </div>
+
+              <div>
+                <dt className="text-gray-500">Status</dt>
+                <dd className="mt-1 font-medium">
+                  {statuses[selectedClaim.status]?.label ??
+                    selectedClaim.status}
+                </dd>
+              </div>
+            </dl>
+          </section>
+        )}
+      </div>
+    </main>
+  );
+}
