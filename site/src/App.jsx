@@ -27,7 +27,7 @@ const MenuBtn = ({ Label, focus, setFocus }) => {
 function App() {
 
   const [focus, setFocus] = useState("Home");
-  const isAdmin = true;
+  const isAdmin = false;
 
   return (
     <div className="w-full min-h-screen flex flex-col">
@@ -41,7 +41,7 @@ function App() {
         {/* menu options */}
         <div className="flex flex-row items-center gap-6">
           <MenuBtn Label={"Home"} focus={focus} setFocus={setFocus} />
-          <MenuBtn Label={"My Reports"} focus={focus} setFocus={setFocus} />
+          <MenuBtn Label={"Reports"} focus={focus} setFocus={setFocus} />
           <MenuBtn Label={"Claim Items"} focus={focus} setFocus={setFocus} />
           <MenuBtn Label={"Find Items"} focus={focus} setFocus={setFocus} />
           <MenuBtn Label={"Help"} focus={focus} setFocus={setFocus} />
