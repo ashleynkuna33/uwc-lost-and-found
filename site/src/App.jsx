@@ -54,7 +54,7 @@ function App() {
       { focus === "Home" && <Home setView={setFocus}/>}
       { /*focus === "My Reports" && <Reports />*/}
       { /*focus === "Claim Items" && <Claim />*/}
-      {focus === "My Reports" && (
+      {focus === "Reports" && (
         isAdmin ? <AdminReports /> : <Reports />
 
       )}
