@@ -1,4 +1,4 @@
 package com.uwcandfound.app.exceptions;
 
-public class MethodArgumentNotValidException {
+public interface MethodArgumentNotValidException {
 }

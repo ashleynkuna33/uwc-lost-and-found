@@ -1,4 +1,4 @@
 package com.uwcandfound.app.exceptions;
 
-public class DataIntegrityViolationException {
+public interface DataIntegrityViolationException {
 }

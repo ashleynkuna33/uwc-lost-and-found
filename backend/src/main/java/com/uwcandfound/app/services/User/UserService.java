@@ -5,6 +5,7 @@ import com.uwcandfound.app.exceptions.ResourceNotFoundException;
 import com.uwcandfound.app.request.*;
 import com.uwcandfound.app.models.User;
 import com.uwcandfound.app.repositories.UserRepository;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ public class UserService implements IUser {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public UserResponse createUser(UserRequest request) {
 //            confirm if student information is new on the system
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -54,8 +56,8 @@ public class UserService implements IUser {
         return newUser;
     }
 
-
     @Override
+    @Transactional
     public UserResponse updateUser(UserRequest request, Long id) {
 //        confirm if the user exist and fetch all data
         User savedUser = userRepository.findById(id)
@@ -112,7 +114,31 @@ public class UserService implements IUser {
         return oldUser;
     }
 
+//    this method require email and password of a previously deactivated account
     @Override
-    public void deleteUser(Long id) {}
+    @Transactional
+    public UserResponse activateUser(String email) {
 
+        User savedUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+
+        savedUser.setActive(true);
+        return new UserResponse(
+                savedUser.getStudentNumber(),
+                savedUser.getName(),
+                savedUser.getLastname(),
+                savedUser.getRole()
+        );
+    }
+
+    @Override
+    @Transactional
+    public void deactivateUser(Long id) {
+
+        User savedUser = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+
+        savedUser.setActive(false);
+//        userRepository.save(savedUser); //we do not have to include this
+    }
 }
