@@ -1,21 +1,10 @@
 package com.uwcandfound.app.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "claims")
@@ -61,3 +50,25 @@ public class Claims {
     @Column(name = "reviewed_at")
     private LocalDateTime reviewedAt;
 }
+
+/*
+ * This entity represents a student's claim for a found item
+ * in the UWC Lost and Found application.
+ *
+ * Each Claims object represents one row in the claims table.
+ *
+ * It stores:
+ * - The ID of the item being claimed.
+ * - The ID of the student submitting the claim.
+ * - The student's explanation of ownership.
+ * - The claim status: pending, approved or rejected.
+ * - The reviewing administrator's ID, notes and review time.
+ * - The time the claim was created.
+ *
+ * The annotations map the Java fields to database columns.
+ * The item and user links are currently stored as IDs.
+ *
+ * This entity only describes the claim data.
+ * The service handles the rules for submitting and reviewing claims.
+ * The repository saves and retrieves claims from the database.
+ */
