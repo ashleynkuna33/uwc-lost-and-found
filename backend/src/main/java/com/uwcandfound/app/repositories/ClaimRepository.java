@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface ClaimsRepository extends JpaRepository<Claims, Long> {
+public interface ClaimRepository extends JpaRepository<Claims, Long> {
 
     List<Claims> findByClaimantId(Long claimantId);
 
