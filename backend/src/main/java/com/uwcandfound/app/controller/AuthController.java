@@ -1,10 +1,12 @@
 package com.uwcandfound.app.controller;
 
+import com.uwcandfound.app.exceptions.DuplicateResourceException;
 import com.uwcandfound.app.exceptions.ResourceNotFoundException;
 import com.uwcandfound.app.models.User;
 import com.uwcandfound.app.repositories.UserRepository;
 import com.uwcandfound.app.request.AuthResponse;
 import com.uwcandfound.app.request.LoginRequest;
+import com.uwcandfound.app.request.RegistrationRequest;
 import com.uwcandfound.app.security.JwtUtils;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -41,5 +43,26 @@ public class AuthController {
 
         String token = jwtUtils.generateToken(user.getEmail(), String.valueOf(user.getRole()));
         return ResponseEntity.ok(new AuthResponse(token));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@Valid @RequestBody RegistrationRequest request) {
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already in use");
+        }
+
+        User user = new User();
+
+        user.setStudentNumber(request.getStudentNumber());
+        user.setName(request.getName());
+        user.setLastname(request.getLastName());
+        user.setEmail(request.getEmail());
+        user.setPhoneNumber(request.getPhone());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        userRepository.save(user);
+
+        return ResponseEntity.ok().body("Account registered successfully");
     }
 }

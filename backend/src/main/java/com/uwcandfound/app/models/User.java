@@ -39,7 +39,7 @@ public class User {
 
     public enum Role {
         STUDENT,
-        ADMINISTRATOR
+        ADMIN
     }
 
     @Enumerated(EnumType.STRING)
