@@ -7,7 +7,8 @@ import lombok.*;
 @Entity
 @NoArgsConstructor  
 @AllArgsConstructor 
-@Table(name ="category")
+@Data 
+@Table(name ="categories")
 public class Categories {
 
 
@@ -19,7 +20,7 @@ public class Categories {
 private Long categoriesId;
 
 
-@Column(name="name")
+@Column(name="name",nullable= false, unique=true,length=100)
 private String name;
 
 }
