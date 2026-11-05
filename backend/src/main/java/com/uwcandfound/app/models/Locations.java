@@ -21,6 +21,11 @@ public class Locations {
 
     @Column(name = "landmark")
     private  String landmark;
+
+    public String getName() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getName'");
+    }
 }
 
 

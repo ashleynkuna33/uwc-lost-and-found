@@ -18,6 +18,7 @@ public class Categories {
 private Long categoriesId;
 
 
+
 @Column(name="name",nullable= false, unique=true,length=80)
 private String name;
 
