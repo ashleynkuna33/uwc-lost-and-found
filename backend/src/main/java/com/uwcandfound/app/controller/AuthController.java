@@ -18,6 +18,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.uwcandfound.app.exceptions.ResourceNotFoundException;
+import com.uwcandfound.app.models.User;
+import com.uwcandfound.app.repositories.UserRepository;
+import com.uwcandfound.app.request.AuthResponse;
+import com.uwcandfound.app.request.LoginRequest;
+import com.uwcandfound.app.request.RegistrationRequest;
+import com.uwcandfound.app.security.JwtUtils;
+
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+
 @RestController
 @RequestMapping("api/v1/auth")
 @AllArgsConstructor

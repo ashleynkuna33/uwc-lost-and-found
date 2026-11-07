@@ -12,6 +12,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+/*Claims Evidence */
+import com.uwcandfound.app.models.ClaimsEvidence;
+import com.uwcandfound.app.repositories.ClaimsEvidenceRepository;
+import com.uwcandfound.app.request.claims.CreateClaimsEvidenceRequest;
+import com.uwcandfound.app.request.ClaimsEvidenceResponse;
+
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -30,6 +37,10 @@ public class ClaimsService implements IClaims {
     private final UserRepository userRepository;
     private final CurrentPrincipalService currentPrincipalService;
     private final EntityManager entityManager;
+
+    /*Claims Evidence */
+    private final ClaimsEvidenceRepository evidenceRepository;
+
 
     @Override
     @Transactional
@@ -208,4 +219,83 @@ public class ClaimsService implements IClaims {
     private ResponseStatusException error(HttpStatus status, String message) {
         return new ResponseStatusException(status, message);
     }
+
+
+    /*Claims Evidence Sevice */
+    
+@Override
+@Transactional
+public ClaimsEvidenceResponse submitEvidence(
+        Long claimId,
+        CreateClaimsEvidenceRequest request) {
+
+    User student = currentUser();
+
+    // Only the claimant can submit evidence.
+    Claims claim = findClaim(claimId);
+
+    if (!student.getId().equals(claim.getClaimantId())) {
+        throw error(HttpStatus.FORBIDDEN,
+                "You can only submit evidence for your own claim.");
+    }
+
+    // Evidence cannot be changed after the claim has been reviewed.
+    if (claim.getStatus() != Claims.ClaimStatus.pending) {
+        throw error(HttpStatus.CONFLICT,
+                "Evidence can only be submitted for pending claims.");
+    }
+
+    if (request.evidenceType() == null) {
+        throw error(HttpStatus.BAD_REQUEST,
+                "Evidence type is required.");
+    }
+
+    // Text evidence is supported by this method initially.
+    if (request.evidenceType() != ClaimsEvidence.EvidenceType.TEXT) {
+        throw error(HttpStatus.BAD_REQUEST,
+                "Image and document uploads require file storage integration.");
+    }
+
+    if (request.description() == null
+            || request.description().isBlank()) {
+        throw error(HttpStatus.BAD_REQUEST,
+                "A description is required for text evidence.");
+    }
+
+    ClaimsEvidence evidence = new ClaimsEvidence();
+    evidence.setClaim(claim);
+    evidence.setDescription(request.description().trim());
+    evidence.setEvidenceType(ClaimsEvidence.EvidenceType.TEXT);
+
+    ClaimsEvidence saved = evidenceRepository.save(evidence);
+
+    return toEvidenceResponse(saved);
+}
+
+@Override
+public List<ClaimsEvidenceResponse> getClaimEvidence(Long claimId) {
+
+    // Reuses your existing authorization rules:
+    // The claimant or an administrator can view the claim.
+    Claims claim = getClaimById(claimId);
+
+    return evidenceRepository.findByClaimClaimId(claim.getClaimId())
+            .stream()
+            .map(this::toEvidenceResponse)
+            .toList();
+}
+
+private ClaimsEvidenceResponse toEvidenceResponse(
+        ClaimsEvidence evidence) {
+
+    return new ClaimsEvidenceResponse(
+            evidence.getEvidenceId(),
+            evidence.getClaim().getClaimId(),
+            evidence.getDescription(),
+            evidence.getEvidenceType(),
+            evidence.getFilePath(),
+            evidence.getSubmittedAt()
+    );
+}
+
 }
