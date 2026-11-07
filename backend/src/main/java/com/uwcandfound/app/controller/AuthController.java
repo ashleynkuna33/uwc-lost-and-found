@@ -1,6 +1,6 @@
 package com.uwcandfound.app.controller;
 
-import com.uwcandfound.app.exceptions.DuplicateResourceException;
+
 import com.uwcandfound.app.exceptions.ResourceNotFoundException;
 import com.uwcandfound.app.models.User;
 import com.uwcandfound.app.repositories.UserRepository;

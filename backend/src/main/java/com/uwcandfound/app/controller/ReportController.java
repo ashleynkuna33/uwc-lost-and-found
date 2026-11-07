@@ -2,22 +2,10 @@ package com.uwcandfound.app.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.uwcandfound.app.request.report.CreateReportRequest;
-import com.uwcandfound.app.request.report.ReportSearchCriteria;
-import com.uwcandfound.app.request.report.UpdateReportRequest;
-import com.uwcandfound.app.request.report.ReportCountsResponse;
-import com.uwcandfound.app.request.report.ReportDetailResponse;
-import com.uwcandfound.app.request.report.ReportSummaryResponse;
+import com.uwcandfound.app.request.report.*;
+
 import com.uwcandfound.app.security.CurrentPrincipalService;
 import com.uwcandfound.app.services.Report.ReportService;
 
@@ -40,7 +28,7 @@ public class ReportController {
     // POST /api/reports  -> 201 Created
     // @Valid runs the annotations on CreateReportRequest before this method
     // starts. Photo upload is not part of this yet.
-    @PostMapping
+    @PostMapping // tested
     @ResponseStatus(HttpStatus.CREATED)
     public ReportDetailResponse create(@Valid @RequestBody CreateReportRequest request) {
         return reportService.create(request, currentPrincipalService.getCurrentUserEmail());
@@ -60,7 +48,7 @@ public class ReportController {
     }
 
     // GET /api/reports/{id}  -> the "Report details" panel
-    @GetMapping("/{id}")
+    @GetMapping("/{id}") //tested
     public ReportDetailResponse getDetail(@PathVariable Long id) {
         return reportService.getDetail(id, currentPrincipalService.getCurrentUserEmail());
     }

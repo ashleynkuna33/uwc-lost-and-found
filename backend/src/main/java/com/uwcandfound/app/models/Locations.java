@@ -13,18 +13,17 @@ public class Locations {
     //id, place, landmark
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "locarion_id")
+    @Column(name = "location_id")
     private  Long id;
 
-    @Column(name = "name", nullable = false, unique = true)
-    private String place;
+    @Column(name = "name", nullable = false, length= 100)
+    private String name;
 
     @Column(name = "landmark")
     private  String landmark;
 
     public String getName() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getName'");
+        return name;
     }
 }
 
