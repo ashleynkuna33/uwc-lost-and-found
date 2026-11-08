@@ -20,6 +20,5 @@ public record ReportSummaryResponse(
         String categoryName,
         String locationName,
         LocalDate dateOccurred,
-        ReportStatus status,
-        String thumbnailUrl) {  // null when the report has no photo
+        ReportStatus status) {  // null when the report has no photo
 }

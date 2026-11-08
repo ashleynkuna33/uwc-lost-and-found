@@ -1,17 +1,10 @@
-
 package com.uwcandfound.app.request.claims;
 
-import com.uwcandfound.app.models.ClaimsEvidence.EvidenceType;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import com.uwcandfound.app.models.ClaimsEvidence;
 
+// Only TEXT submissions are currently accepted by the service.
+// IMAGE and DOCUMENT require an upload/storage API to be implemented first.
 public record CreateClaimsEvidenceRequest(
-
-        @NotNull(message = "Evidence type is required")
-        EvidenceType evidenceType,
-
-        @Size(max = 5000, message = "Description cannot exceed 5000 characters")
+        ClaimsEvidence.EvidenceType evidenceType,
         String description
-
 ) {}
-

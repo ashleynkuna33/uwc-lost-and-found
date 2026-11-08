@@ -1,20 +1,28 @@
+
 package com.uwcandfound.app.repositories;
 
-import com.uwcandfound.app.models.Items;
+import com.uwcandfound.app.models.Item;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface ItemRepository extends JpaRepository<Items, Long> {
+public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    // Search items by status (e.g., "LOST", "FOUND", "CLAIMED")
-    List<Items> findByStatus(String status);
+    @Override
+    @EntityGraph(attributePaths = {
+            "itemImages",
+            "category",
+            "location"
+    })
+    List<Item> findAll();
 
-    // Search items by name (case-insensitive search)
-    List<Items> findByItemNameContainingIgnoreCase(String itemName);
+    List<Item> findByStatus(Item.Status status);
 
-    // Search items containing keywords in name or description
-    List<Items> findByItemNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String itemName, String description);
+    Optional<Item> findFirstByItemNameIgnoreCaseOrderByIdDesc(
+            String itemName
+    );
 }

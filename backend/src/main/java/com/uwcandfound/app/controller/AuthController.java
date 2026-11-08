@@ -4,26 +4,18 @@ package com.uwcandfound.app.controller;
 import com.uwcandfound.app.exceptions.ResourceNotFoundException;
 import com.uwcandfound.app.models.User;
 import com.uwcandfound.app.repositories.UserRepository;
-import com.uwcandfound.app.request.AuthResponse;
-import com.uwcandfound.app.request.LoginRequest;
-import com.uwcandfound.app.request.RegistrationRequest;
+import com.uwcandfound.app.request.*;
 import com.uwcandfound.app.security.JwtUtils;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import com.uwcandfound.app.exceptions.ResourceNotFoundException;
 import com.uwcandfound.app.models.User;
 import com.uwcandfound.app.repositories.UserRepository;
-import com.uwcandfound.app.request.AuthResponse;
-import com.uwcandfound.app.request.LoginRequest;
-import com.uwcandfound.app.request.RegistrationRequest;
 import com.uwcandfound.app.security.JwtUtils;
 
 import jakarta.validation.Valid;
@@ -41,7 +33,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
 //        step 1. get the user's email
-        User user = userRepository.findByEmail(request.getEmail())
+        User user = userRepository.findByStudentNumber(request.getStudentNumber())
                 .orElseThrow(() -> new ResourceNotFoundException("Invalid email or password"));
 
         if (!user.isActive()) {
@@ -53,7 +45,7 @@ public class AuthController {
         }
 
         String token = jwtUtils.generateToken(user.getEmail(), String.valueOf(user.getRole()));
-        return ResponseEntity.ok(new AuthResponse(token));
+        return ResponseEntity.ok(new AuthResponse(token, user.getStudentNumber(), user.getRole()));
     }
 
     @PostMapping("/register")
@@ -75,5 +67,19 @@ public class AuthController {
         userRepository.save(user);
 
         return ResponseEntity.ok().body("Account registered successfully");
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> me(Authentication authentication) {
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail((email))
+                .orElseThrow(() -> new ResourceNotFoundException("Session is not valid"));
+
+        if (!user.isActive()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Account is deactivated");
+        }
+
+        return ResponseEntity.ok(new AuthResponse( user.getStudentNumber(), user.getRole()));
     }
 }

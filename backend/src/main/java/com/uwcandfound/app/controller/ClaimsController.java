@@ -1,55 +1,52 @@
 package com.uwcandfound.app.controller;
 
-import com.uwcandfound.app.models.Claims;
-import com.uwcandfound.app.request.claims.SubmitClaimRequest;
 import com.uwcandfound.app.request.claims.ReviewClaimRequest;
+import com.uwcandfound.app.request.claims.SubmitClaimRequest;
+import com.uwcandfound.app.request.ClaimResponse;
 import com.uwcandfound.app.services.Claims.IClaims;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
-/* Receives claims HTTP requests and passes the work to the claims service.
- * The service checks the logged-in user, permissions and claim rules.
- */
 @RestController
-@RequestMapping("/api/claims")
+@RequestMapping("/api/v1/claims")
+@RequiredArgsConstructor
 public class ClaimsController {
+
     private final IClaims claimsService;
 
-    // Spring supplies the service through this constructor.
-    public ClaimsController(IClaims claimsService) {
-        this.claimsService = claimsService;
-    }
-
-    // A student submits a claim for a found item.
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Claims submitClaim(@RequestBody SubmitClaimRequest request) {
-        return claimsService.submitClaim(request.getItemId(), request.getExplanation());
+    public ClaimResponse submitClaim(@RequestBody SubmitClaimRequest request) {
+        return claimsService.submitClaim(request.itemId(), request.explanation());
     }
 
-    // Returns only the logged-in user's claims.
     @GetMapping("/my")
-    public List<Claims> getMyClaims() {
+    public List<ClaimResponse> getMyClaims() {
         return claimsService.getMyClaims();
     }
 
-    // The service allows the claim owner or an administrator to view it.
     @GetMapping("/{claimId}")
-    public Claims getClaimById(@PathVariable("claimId") Long claimId) {
+    public ClaimResponse getClaimById(@PathVariable Long claimId) {
         return claimsService.getClaimById(claimId);
     }
 
-    // The service allows only administrators to view every claim.
     @GetMapping
-    public List<Claims> getAllClaims() {
+    public List<ClaimResponse> getAllClaims() {
         return claimsService.getAllClaims();
     }
 
-    // An administrator approves or rejects a pending claim.
     @PatchMapping("/{claimId}/review")
-    public Claims reviewClaim(@PathVariable("claimId") Long claimId,
-                              @RequestBody ReviewClaimRequest request) {
-        return claimsService.reviewClaim(claimId, request.getDecision(), request.getAdminNotes());
+    public ClaimResponse reviewClaim(
+            @PathVariable Long claimId,
+            @RequestBody ReviewClaimRequest request
+    ) {
+        return claimsService.reviewClaim(
+                claimId,
+                request.decision(),
+                request.adminNotes()
+        );
     }
 }

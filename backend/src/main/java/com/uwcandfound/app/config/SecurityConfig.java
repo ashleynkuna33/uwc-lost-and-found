@@ -1,9 +1,12 @@
 package com.uwcandfound.app.config;
 
 import com.uwcandfound.app.security.JwtAuthenticationFilter;
-import lombok.AllArgsConstructor;
+import jakarta.servlet.DispatcherType;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -14,7 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -22,26 +25,44 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                // 1. Disable CSRF for stateless REST APIs[cite: 6]
+                .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
-
-                // 2. Set stateless session management[cite: 6]
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-                // 3. Define public vs protected endpoints[cite: 6]
+                .sessionManagement(session -> session.sessionCreationPolicy(
+                        SessionCreationPolicy.STATELESS
+                ))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**", "/actuator/health").permitAll()
+                        // Permit Spring's error dispatch so an original 404 is not masked as 403.
+                        .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
+
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/v1/auth/login",
+                                "/api/v1/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/actuator/health").permitAll()
+
+                        // For local UI testing: anyone may read items.
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/items",
+                                "/api/v1/items/",
+                                "/api/v1/items/**").permitAll()
+
+                        // Claims (including evidence) require a JWT.
+                        // Fine-grained claimant/admin permissions are checked by ClaimsService.
+                        .requestMatchers("/api/v1/claims", "/api/v1/claims/**")
+                        .authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/auth/me")
+                        .authenticated()
+
+                        // Other item writes and remaining API routes require authentication.
                         .anyRequest().authenticated()
                 )
-
-                // 4. Use YOUR custom JWT filter instead of oauth2ResourceServer[cite: 6]
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-
+                .addFilterBefore(jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Password hashing[cite: 8, 9, 15]
+        return new BCryptPasswordEncoder();
     }
 }

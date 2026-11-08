@@ -1,7 +1,9 @@
 package com.uwcandfound.app.models;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -18,6 +20,7 @@ public class Claims {
     @Column(name = "claim_id")
     private Long claimId;
 
+    // Existing schema stores foreign keys as IDs.
     @Column(name = "item_id", nullable = false)
     private Long itemId;
 
@@ -27,6 +30,7 @@ public class Claims {
     @Column(name = "explanation", nullable = false, columnDefinition = "TEXT")
     private String explanation;
 
+    // Keep lowercase: these are the enum names in the existing claims schema.
     public enum ClaimStatus {
         pending,
         approved,
@@ -50,25 +54,3 @@ public class Claims {
     @Column(name = "reviewed_at")
     private LocalDateTime reviewedAt;
 }
-
-/*
- * This entity represents a student's claim for a found item
- * in the UWC Lost and Found application.
- *
- * Each Claims object represents one row in the claims table.
- *
- * It stores:
- * - The ID of the item being claimed.
- * - The ID of the student submitting the claim.
- * - The student's explanation of ownership.
- * - The claim status: pending, approved or rejected.
- * - The reviewing administrator's ID, notes and review time.
- * - The time the claim was created.
- *
- * The annotations map the Java fields to database columns.
- * The item and user links are currently stored as IDs.
- *
- * This entity only describes the claim data.
- * The service handles the rules for submitting and reviewing claims.
- * The repository saves and retrieves claims from the database.
- */

@@ -1,15 +1,14 @@
+
 package com.uwcandfound.app.models;
 
 import java.time.LocalDateTime;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.jspecify.annotations.NonNull;
 
 @Entity
 @Table(name = "items")
@@ -17,9 +16,8 @@ import org.jspecify.annotations.NonNull;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Items {
+public class Item {
 
-    // Unique identifier for each item
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "item_id")
@@ -37,11 +35,9 @@ public class Items {
     @Column(name = "report_type", nullable = false)
     private Type type = Type.FOUND;
 
-    // Name of the lost or found item
     @Column(name = "item_name", nullable = false, length = 150)
     private String itemName;
 
-    // Description of the item
     @Column(name = "description", length = 1000)
     private String description;
 
@@ -54,20 +50,38 @@ public class Items {
         RETURNED,
         CLOSED
     }
-    // Current status of the item
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 50)
     private Status status = Status.OPEN;
 
-    // Date when the item was lost or found
     @Column(name = "date_occurred")
     private LocalDateTime dateOccurred;
 
-    // Automatically records when the item is created
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "")
-    @JoinColumn(name = "item_id")
-    private Set<ItemImage> itemImages;
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ItemImage> itemImages = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Categories category;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "location_id", nullable = false)
+    private Locations location;
+
+    // Add image to item
+    public void addImage(ItemImage image) {
+        itemImages.add(image);
+        image.setItem(this);
+    }
+
+    // Remove image from item
+    public void removeImage(ItemImage image) {
+        itemImages.remove(image);
+        image.setItem(null);
+    }
 }

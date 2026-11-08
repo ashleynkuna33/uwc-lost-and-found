@@ -253,8 +253,7 @@ public class ReportService {
                 r.getCategory().getName(),
                 r.getLocation().getName(),
                 r.getDateOccurred(),
-                r.getStatus(),
-                r.getImages().isEmpty() ? null : r.getImages().get(0).getImagePath());
+                r.getStatus());
     }
 
     private ReportDetailResponse toDetail(Reports r) {
@@ -269,8 +268,7 @@ public class ReportService {
                 r.getLocationDetails(),
                 r.getDateOccurred(),
                 r.getStatus(),
-                r.getCreatedAt(),
-                r.getImages().stream().map(ItemImage::getImagePath).toList());
+                r.getCreatedAt());
     }
 
     // "LF-000123": built from the ID, never stored.

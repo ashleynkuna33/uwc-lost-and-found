@@ -77,9 +77,4 @@ public class Reports {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    // Not a column: this is the "one report has many photos" side of the
-    // relationship. The foreign key lives in report_images.report_id.
-    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("uploadedAt ASC")
-    private List<ItemImage> images = new ArrayList<>();
 }

@@ -3,8 +3,7 @@ package com.uwcandfound.app.request.report;
  
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
- 
+
 import com.uwcandfound.app.models.Reports.ReportStatus;
 import com.uwcandfound.app.models.Reports.ReportType;
  
@@ -24,7 +23,7 @@ public record ReportDetailResponse(
         String locationDetails,
         LocalDate dateOccurred,
         ReportStatus status,
-        LocalDateTime createdAt,
-        List<String> imageUrls) {
+        LocalDateTime createdAt
+) {
 }
  

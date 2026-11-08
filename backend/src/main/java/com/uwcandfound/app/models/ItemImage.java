@@ -1,11 +1,12 @@
+
 package com.uwcandfound.app.models;
 
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.*;
 import lombok.*;
-
 
 @Entity
 @Table(name = "item_images")
@@ -19,12 +20,12 @@ public class ItemImage {
     @Column(name = "image_id")
     private Long id;
 
-    // This side owns the foreign key column.
+    // Many images can belong to one item
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "report_id", nullable = false)
-    private Reports report;
+    @JoinColumn(name = "item_id", nullable = false)
+    private Item item;
 
-    // A path or URL to the file on disk, never the image bytes.
+    // Location of the image file
     @Column(name = "image_path", nullable = false, length = 500)
     private String imagePath;
 
