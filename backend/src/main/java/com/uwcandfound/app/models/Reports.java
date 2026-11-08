@@ -1,19 +1,15 @@
 package com.uwcandfound.app.models;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 
 import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.*;
-
 import lombok.*;
 
-
-
+// A report links a user to an item. The item holds everything about the object
+// (type, status, name, photos...). The report holds who reported it and,
+// when it was closed, who closed it and why. Item itself is not changed.
 @Entity
 @Table(name = "reports")
 @Getter
@@ -21,17 +17,18 @@ import lombok.*;
 @NoArgsConstructor
 public class Reports {
 
-    
+    // Used by the request/response classes. The service converts these to
+    // Item.Type and Item.Status (same names) when it talks to the item.
     public enum ReportType {
-        lost,
-        found
+        LOST,
+        FOUND
     }
 
     public enum ReportStatus {
-        open,
-        claimed,
-        returned,
-        closed
+        OPEN,
+        CLAIMED,
+        RETURNED,
+        CLOSED
     }
 
     @Id
@@ -44,37 +41,22 @@ public class Reports {
     @JoinColumn(name = "reported_by", nullable = false)
     private User reportedBy;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "report_type", nullable = false)
-    private ReportType reportType;
-
-    @Column(name = "item_name", nullable = false, length = 150)
-    private String itemName;
-
-    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
-    private String description;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "category_id", nullable = false)
-    private Categories category;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "location_id", nullable = false)
-    private Locations location;
-
-    @Column(name = "location_details", length = 255)
-    private String locationDetails;
-
-    @Column(name = "date_occurred", nullable = false)
-    private LocalDate dateOccurred;
-
-    // Default lives here; only the service should change it afterwards.
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private ReportStatus status = ReportStatus.open;
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "item_id", nullable = false, unique = true)
+    private Item item;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    // Filled in when the item is closed
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "closed_by")
+    private User closedBy;
+
+    @Column(name = "closed_reason", length = 500)
+    private String closedReason;
+
+    @Column(name = "closed_at")
+    private LocalDateTime closedAt;
 }

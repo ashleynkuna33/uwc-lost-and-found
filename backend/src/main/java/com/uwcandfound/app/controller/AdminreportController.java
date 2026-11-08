@@ -1,6 +1,7 @@
 package com.uwcandfound.app.controller;
 
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.uwcandfound.app.request.report.AdminReportResponse;
 import com.uwcandfound.app.request.report.AdminReportSearchCriteria;
 import com.uwcandfound.app.request.report.ReportDetailResponse;
 import com.uwcandfound.app.request.report.ReportSummaryResponse;
@@ -36,7 +38,7 @@ public class AdminreportController {
 
     // GET /api/admin/reports/{id}  -> any report, not only your own
     @GetMapping("/{id}")
-    public ReportDetailResponse get(@PathVariable Long id) {
+    public AdminReportResponse get(@PathVariable Long id) {
         return reportService.adminGet(id);
     }
 
@@ -45,7 +47,8 @@ public class AdminreportController {
     @PatchMapping("/{id}/status")
     public ReportDetailResponse setStatus(
             @PathVariable Long id,
-            @Valid @RequestBody UpdateReportStatusRequest request) {
-        return reportService.adminSetStatus(id, request);
+            @Valid @RequestBody UpdateReportStatusRequest request,
+            Authentication authentication) {
+        return reportService.adminSetStatus(id, request, authentication.getName());
     }
 }

@@ -5,20 +5,16 @@ import java.time.LocalDate;
 import com.uwcandfound.app.models.Reports.ReportStatus;
 import com.uwcandfound.app.models.Reports.ReportType;
 
-// One row in the "My Reports" list. Kept light on purpose: no description,
-// no full photo list.
-//
-// Where each field comes from:
-//   entity field:        id, reportType, itemName, dateOccurred, status
-//   through relations:   categoryName, locationName, thumbnailUrl (first photo)
-//   calculated:          reference (built from the id, not stored)
+// One row in a report list. The order of these fields must match the
+// arguments in ReportService.toSummary().
 public record ReportSummaryResponse(
         Long id,
-        String reference,       // "LF-000123"
+        String reference,
         ReportType reportType,
         String itemName,
-        String categoryName,
-        String locationName,
+        String category,
+        String location,
         LocalDate dateOccurred,
-        ReportStatus status) {  // null when the report has no photo
+        ReportStatus status,
+        String thumbnail) {
 }
