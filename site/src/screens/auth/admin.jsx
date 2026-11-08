@@ -4,7 +4,7 @@ import { RiLockPasswordFill } from "react-icons/ri";
 
 import CustomTextInput from "../../components/CustomTextField";
 
-function AdminAuth() {
+function AdminAuth({login}) {
     return(
         <div className="flex-1 flex flex-col bg-[#152862]">
             {/* board */}

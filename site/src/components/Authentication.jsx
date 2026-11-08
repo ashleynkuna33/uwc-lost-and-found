@@ -2,7 +2,7 @@ import { useState } from "react";
 import { SignIn, ForgotPassword, AdminAuth } from "../screens/auth";
 
 
-function Authentication() {
+function Authentication({login}) {
     const [screen, setScreen] = useState("SignIn");
 
     return (
@@ -13,9 +13,9 @@ function Authentication() {
                 <h1 className="text-4xl font-semibold text-[#cead5e] py-6">UWC SYSTEM AUTHENTICATION</h1>
             </div>
 
-            {screen === "SignIn" && <SignIn setView={setScreen}/>}
+            {screen === "SignIn" && <SignIn login={login} setView={setScreen}/>}
             {screen === "ForgotPassword" && <ForgotPassword setView={setScreen}/>}
-            {screen === "AdminAuth" && <AdminAuth setView={setScreen}/>}
+            {screen === "AdminAuth" && <AdminAuth login={login} setView={setScreen}/>}
 
             {/* footer */}
             <div className="mt-auto flex justify-center mb-4">

@@ -1,15 +1,23 @@
-// interceptors.js
-import apiClient from "./client.js"; // 👈 CRITICAL FIX: Import your instance
 
-export const setupInterceptors = () => {
-  apiClient.interceptors.request.use(
+export function setupInterceptors(client) {
+  client.interceptors.request.use(
     (config) => {
-      const token = localStorage.getItem('sdk_token');
+      const token = sessionStorage.getItem("access_token");
+
       if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+        config.headers.set(
+          "Authorization",
+          `Bearer ${token}`
+        );
       }
+
       return config;
     },
     (error) => Promise.reject(error)
   );
-};
+
+  client.interceptors.response.use(
+    (response) => response,
+    (error) => Promise.reject(error)
+  );
+}

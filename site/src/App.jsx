@@ -5,10 +5,13 @@ import HeaderImageLogo from "./assets/uwcHeaderLogo-transparent.png"
 import { useState } from "react";
 import Authentication from "./components/Authentication";
 
+import { useAuth } from "./hooks/useAuth";
+
 import { Home, Claim, FindItems, Reports, Help } from "./screens/students";
 import AdminClaim from "./screens/administrators/Claim";
 import AdminReports from "./screens/administrators/Reports";
 
+// component checked
 const MenuBtn = ({ Label, focus, setFocus }) => {
   const isFocused = focus === Label;
 
@@ -25,13 +28,42 @@ const MenuBtn = ({ Label, focus, setFocus }) => {
 }
 
 function App() {
-
   const [focus, setFocus] = useState("Home");
-  const isAdmin = true;
+  const { user, status, isAuthenticated, isLoading, checkSession, login, logout } = useAuth();
+
+  const isAdmin = user?.roles?.some(
+    role => role === "ADMIN" || role === "ROLE_ADMIN"
+  ) ?? false;
+
+  const renderScreen = () => {
+    switch (focus) {
+      case "Home":
+        return <Home setView={setFocus} />;
+
+      case "Reports":
+        return isAdmin
+          ? <AdminReports />
+          : <Reports user={user} logout={logout}/>;
+
+      case "Claim Items":
+        return isAdmin
+          ? <AdminClaim />
+          : <Claim user={user} logout={logout}/>;
+
+      case "Find Items":
+        return <FindItems />;
+
+      case "Help":
+        return <Help />;
+
+      default:
+        return <Home setView={setFocus} />;
+    }
+  };
 
   return (
     <div className="w-full min-h-screen flex flex-col">
-      {/* header */}
+      {/* header - checked and it is working as intended */}
       <div className="flex flex-wrap p-4 bg-[#152862] items-center justify-between border-b-4 border-[#cead5e] gap-4">
         <div className="flex flex-row gap-4 items-center" onClick={() => window.location.reload()}>
           <img src={HeaderImageLogo} alt="" width={200} height={200}/>
@@ -50,19 +82,23 @@ function App() {
       </div>
 
       {/* body */}
-      {/* <Authentication /> */}
-      { focus === "Home" && <Home setView={setFocus}/>}
-      { /*focus === "My Reports" && <Reports />*/}
-      { /*focus === "Claim Items" && <Claim />*/}
-      {focus === "Reports" && (
-        isAdmin ? <AdminReports /> : <Reports />
+        {isLoading ? (
+          <p>Checking session...</p>
 
-      )}
-      {focus === "Claim Items" &&(
-        isAdmin ? <AdminClaim /> : <Claim />
+        ) : status === "error" ? (
+          <div>
+            <p>Unable to verify your session.</p>
+            <button onClick={checkSession}>
+              Retry
+            </button>
+          </div>
+
+        ) : !isAuthenticated ? (
+          <Authentication login={login}/>
+
+        ) : (
+          renderScreen()
         )}
-      { focus === "Find Items" && <FindItems />}
-      { focus === "Help" && <Help />}
 
     </div>
   )

@@ -6,21 +6,40 @@ import CustomTextInput from "../../components/CustomTextField";
 
 import { useState } from "react";
 
-function SignIn({setView}) {
+function SignIn({setView, login}) {
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const handleSignIn = () => {
-        alert(`Username: ${username}\nPassword: ${password}`);
-        // console.log(password);
-        // if (!username.trim() || !password.trim()) {
-        //     console.log("Username or Password empty");
-        //     return;
-        // }
+    const handleSignIn = async () => {
+        if (!username.trim() || !password.trim()) {
+            setError("Username and password are required.");
+            return;
+        }
 
-        // console.log("Hello, I am working")
-    }
+        setLoading(true);
+        setError("");
+
+        try {
+            const success = await login({
+                studentNumber: username.trim(),
+                password
+            });
+
+            if (!success) {
+                setError("Unable to verify your session.");
+            }
+        } catch (error) {
+            setError(
+                error.response?.data?.message ||
+                "Login failed. Please check your credentials."
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return(
         <div className="flex justify-center">

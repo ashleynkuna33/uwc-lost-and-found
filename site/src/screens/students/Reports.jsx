@@ -5,6 +5,7 @@ import { FaPlus, FaMagnifyingGlass } from "react-icons/fa6";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { FaRegCheckCircle, FaRegClock } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
+import { CiLogout } from "react-icons/ci";
 
 // stats card
 const StatCard = ({ icon: Icon, iconColor = "#2650aa", iconBgColor = "#eaf1f7", number = 0, text = "",}) => {
@@ -27,7 +28,7 @@ const StatCard = ({ icon: Icon, iconColor = "#2650aa", iconBgColor = "#eaf1f7", 
   );
 };
 
-function Reports({ reports = [], notifications = [], renderReport, reportDetails, onNewReport, onMarkAllRead, }) {
+function Reports({ reports = [], notifications = [], renderReport, reportDetails, onNewReport, onMarkAllRead, user, logout}) {
   const [activeTab, setActiveTab] = useState("All");
   const [search, setSearch] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("All");
@@ -71,14 +72,25 @@ function Reports({ reports = [], notifications = [], renderReport, reportDetails
         {/* title */}
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-bold text-[#152862] md:text-3xl">My Reports</h1>
+            <h1 className="text-xl font-bold text-[#152862] md:text-3xl">My Reports</h1>
             <p className="mt-1 text-sm text-gray-600 md:text-base">Manage your lost and found reports and respond to updates.</p>
           </div>
 
-          <button type="button" onClick={onNewReport} className="flex shrink-0 cursor-pointer items-center gap-2 rounded-md bg-[#152862] px-3 py-2.5 text-white shadow-sm transition-all duration-150 hover:opacity-90" >
-            <FaPlus size={17} />
-            <span className="hidden text-sm font-semibold sm:block">New Report</span>
-          </button>
+          <div className="flex flex-row gap-6 items-center justify-center">
+            <button type="button" onClick={onNewReport} className="flex shrink-0 cursor-pointer items-center gap-2 rounded-md bg-[#152862] px-3 py-2.5 text-white shadow-sm transition-all duration-150 hover:opacity-90" >
+              <FaPlus size={17} />
+              <span className="hidden text-sm font-semibold sm:block">New Report</span>
+            </button>
+
+            {/* user session */}
+            <div className="flex flex-row gap-1.5">
+              <div className="px-1 py-1.5 rounded-2xl text-sm font-bold text-blue-950">Logged in: {user?.studentNumber}</div>
+              <button className="cursor-pointer" type="button" onClick={logout}>
+                <CiLogout size={28} color="#a61d3d"/>
+              </button>
+            </div>
+          </div>
+          
         </div>
 
         {/* quick statistics */}
