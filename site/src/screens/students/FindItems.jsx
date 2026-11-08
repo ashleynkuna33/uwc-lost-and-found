@@ -1,13 +1,18 @@
 
 import { useEffect, useState } from "react";
 import ItemsContainer from "../../components/ItemsContainer";
+import CreateClaim from "../../components/CreateClaim";
 import { itemApi } from "../../api/modules/items.api";
+import { claimsApi } from "../../api/modules/claims.api";
 
-function FindItems() {
+function FindItems({ isAdmin = false }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
+
+  // Currently selected item for the claim popup
+  const [selectedItem, setSelectedItem] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -32,8 +37,8 @@ function FindItems() {
 
           setError(
             err.response?.data?.message ||
-            err.message ||
-            "Unable to load items."
+              err.message ||
+              "Unable to load items."
           );
         }
       } finally {
@@ -54,6 +59,17 @@ function FindItems() {
     setReloadKey((previous) => previous + 1);
   };
 
+  const handleItemClick = (item) => {
+    setSelectedItem(item);
+  };
+
+  const closeClaim = () => {
+    setSelectedItem(null);
+  };
+
+  const submitClaim = ({ itemId, proofOfOwnership }) =>
+    claimsApi.submit(itemId, proofOfOwnership);
+
   return (
     <div className="flex-1 flex flex-col h-full min-h-0 overflow-y-auto bg-[#eaf1f7]">
 
@@ -68,7 +84,20 @@ function FindItems() {
         loading={loading}
         error={error}
         onRetry={refreshItems}
+        onItemClick={handleItemClick}
+        canOpenAnyItem={isAdmin}
       />
+
+      {/* Item details or claim popup */}
+      {selectedItem && (
+        <CreateClaim
+          key={selectedItem.id ?? selectedItem.item_id}
+          item={selectedItem}
+          readOnly={isAdmin}
+          hidden={closeClaim}
+          onClaim={isAdmin ? undefined : submitClaim}
+        />
+      )}
 
     </div>
   );

@@ -11,6 +11,7 @@ import {
 } from "react-icons/fi";
 import { CiLogout } from "react-icons/ci";
 import ItemsTable from "../../components/ItemsTable";
+import CreateClaim from "../../components/CreateClaim";
 import { claimsApi } from "../../api/modules/claims.api";
 import { itemApi } from "../../api/modules/items.api";
 
@@ -55,6 +56,8 @@ export default function Claims({ onNewClaim, user, logout }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [itemsWarning, setItemsWarning] = useState(false);
+  const [availableItems, setAvailableItems] = useState([]);
+  const [isCreatingClaim, setIsCreatingClaim] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
 
   const [activeTab, setActiveTab] = useState("All");
@@ -106,6 +109,7 @@ export default function Claims({ onNewClaim, user, logout }) {
             ...claim,
             // Keep the actual database claimId and itemId.
             itemName: item?.itemName || `Item #${claim.itemId}`,
+            images: item?.images || (item?.image ? [item.image] : []),
             description: item?.description || "Item details unavailable.",
             itemLocation: item?.location || null,
             submitted: formatDate(claim.createdAt),
@@ -114,6 +118,7 @@ export default function Claims({ onNewClaim, user, logout }) {
         });
 
         if (!cancelled) {
+          setAvailableItems(items);
           setClaims(mappedClaims);
           setItemsWarning(
             itemResult.status !== "fulfilled" || !Array.isArray(itemResult.value.data)
@@ -231,11 +236,13 @@ export default function Claims({ onNewClaim, user, logout }) {
   }
 
   function handleNewClaim() {
-    if (typeof onNewClaim === "function") {
-      onNewClaim();
-    } else {
-      window.alert("Connect this button to your claim form.");
-    }
+    onNewClaim?.();
+    setIsCreatingClaim(true);
+  }
+
+  async function submitNewClaim({ itemId, proofOfOwnership }) {
+    await claimsApi.submit(itemId, proofOfOwnership);
+    setReloadKey((key) => key + 1);
   }
 
   function handleRemoveUnavailable() {
@@ -516,6 +523,13 @@ export default function Claims({ onNewClaim, user, logout }) {
           </section>
         )}
       </div>
+      {isCreatingClaim && (
+        <CreateClaim
+          items={availableItems}
+          hidden={() => setIsCreatingClaim(false)}
+          onClaim={submitNewClaim}
+        />
+      )}
     </main>
   );
 }

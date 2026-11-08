@@ -3,6 +3,7 @@ import HeaderImageLogo from "./assets/uwcHeaderLogo-transparent.png"
 
 // 
 import { useState } from "react";
+import { FiLogOut } from "react-icons/fi";
 import Authentication from "./components/Authentication";
 
 import { useAuth } from "./hooks/useAuth";
@@ -31,9 +32,18 @@ function App() {
   const [focus, setFocus] = useState("Home");
   const { user, status, isAuthenticated, isLoading, checkSession, login, logout } = useAuth();
 
-  const isAdmin = user?.roles?.some(
-    role => role === "ADMIN" || role === "ROLE_ADMIN"
-  ) ?? false;
+  const userRoles = [
+    user?.role,
+    ...(Array.isArray(user?.roles) ? user.roles : []),
+  ];
+  const isAdmin = userRoles.some(
+    (role) => String(role || "").toUpperCase().replace(/^ROLE_/, "") === "ADMIN"
+  );
+
+  const handleLogout = async () => {
+    await logout();
+    setFocus("Home");
+  };
 
   const renderScreen = () => {
     switch (focus) {
@@ -51,7 +61,7 @@ function App() {
           : <Claim user={user} logout={logout}/>;
 
       case "Find Items":
-        return <FindItems />;
+        return <FindItems isAdmin={isAdmin} />;
 
       case "Help":
         return <Help />;
@@ -71,12 +81,22 @@ function App() {
         </div>
         
         {/* menu options */}
-        <div className="flex flex-row items-center gap-6">
+        <div className="flex flex-row flex-wrap items-center gap-6">
           <MenuBtn Label={"Home"} focus={focus} setFocus={setFocus} />
           <MenuBtn Label={"Reports"} focus={focus} setFocus={setFocus} />
           <MenuBtn Label={"Claim Items"} focus={focus} setFocus={setFocus} />
           <MenuBtn Label={"Find Items"} focus={focus} setFocus={setFocus} />
           <MenuBtn Label={"Help"} focus={focus} setFocus={setFocus} />
+          {isAuthenticated && isAdmin && (
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="flex items-center gap-2 rounded-lg border border-white/30 px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
+            >
+              <FiLogOut size={17} />
+              Log out
+            </button>
+          )}
         </div>
 
       </div>

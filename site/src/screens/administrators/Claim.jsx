@@ -17,6 +17,7 @@ import { SlCalender } from "react-icons/sl";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { FaRegCheckCircle, FaRegClock } from "react-icons/fa";
+import ImageCarousel from "../../components/ImageCarousel";
 
 // stats card
 const StatCard = ({
@@ -736,17 +737,13 @@ export default function AdminClaim({
                     key={group.id}
                     className={`flex flex-wrap items-center gap-3 rounded-lg border p-3 transition-colors ${selectedItem?.id === group.id ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:bg-gray-50"}`}
                   >
-                    <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-md bg-[#eaf1f7]">
-                      {photos[0] ? (
-                        <img
-                          src={photos[0]}
-                          alt={name}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <FiImage size={25} className="text-[#2650aa]" />
-                      )}
-                    </div>
+                    <ImageCarousel
+                      images={photos}
+                      alt={name}
+                      className="w-16"
+                      imageClassName="h-16 w-16 rounded-md bg-[#eaf1f7]"
+                      fallback={<FiImage size={25} className="text-[#2650aa]" />}
+                    />
                     <div className="min-w-0 flex-1">
                       <h3 className="font-bold text-[#152862]">{name}</h3>
                       <p className="mt-1 text-xs text-gray-500">
@@ -834,17 +831,13 @@ export default function AdminClaim({
             <>
               {/* item details */}
               <div className="mt-4 flex flex-col gap-4 rounded-md border border-gray-200 p-3 sm:flex-row">
-                <div className="flex h-36 w-full shrink-0 items-center justify-center overflow-hidden rounded-md bg-[#eaf1f7] sm:w-32">
-                  {itemPhotos[0] ? (
-                    <img
-                      src={itemPhotos[0]}
-                      alt={itemName}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <FiImage size={40} className="text-[#2650aa]" />
-                  )}
-                </div>
+                <ImageCarousel
+                  images={itemPhotos}
+                  alt={itemName}
+                  className="w-full sm:w-32"
+                  imageClassName="h-36 w-full rounded-md bg-[#eaf1f7]"
+                  fallback={<FiImage size={40} className="text-[#2650aa]" />}
+                />
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <h3 className="text-lg font-bold text-[#152862]">
@@ -980,14 +973,28 @@ export default function AdminClaim({
                   {selectedItem.claims.map((claim) => {
                     const evidence = getEvidence(claim);
                     const proof = Array.isArray(claim.proof) ? claim.proof : [];
+                    const claimPhotos = getPhotos(claim);
                     const isSelected = selectedClaim?.id === claim.id;
                     return (
-                      <button
+                      <div
                         key={claim.id}
-                        type="button"
-                        disabled={saving || sending}
-                        onClick={() => setSelectedClaimId(claim.id)}
+                        role="button"
+                        tabIndex={saving || sending ? -1 : 0}
+                        aria-disabled={saving || sending}
                         aria-pressed={isSelected}
+                        onClick={() => {
+                          if (!saving && !sending) setSelectedClaimId(claim.id);
+                        }}
+                        onKeyDown={(event) => {
+                          if (
+                            !saving &&
+                            !sending &&
+                            (event.key === "Enter" || event.key === " ")
+                          ) {
+                            event.preventDefault();
+                            setSelectedClaimId(claim.id);
+                          }
+                        }}
                         className={`w-56 shrink-0 cursor-pointer rounded-md border p-3 text-left transition-colors sm:w-64 ${isSelected ? "border-blue-500 bg-blue-50" : "border-gray-200 bg-white hover:border-blue-300"}`}
                       >
                         {claim.recommended === true && (
@@ -1093,33 +1100,27 @@ export default function AdminClaim({
                               Receipt
                             </span>
                           )}
-                          {getPhotos(claim).length > 0 && (
+                          {claimPhotos.length > 0 && (
                             <span className="rounded-md bg-green-50 px-2 py-1 text-xs text-green-700">
-                              {getPhotos(claim).length} photo(s)
+                              {claimPhotos.length} photo(s)
                             </span>
                           )}
                           {!proof.length &&
                             !claim.attachmentUrl &&
                             !claim.receiptUrl &&
-                            !getPhotos(claim).length && (
+                            !claimPhotos.length && (
                               <span className="text-xs text-gray-500">
                                 No proof attached
                               </span>
                             )}
                         </div>
-                        {getPhotos(claim).length > 0 && (
-                          <div className="mt-2 flex gap-1.5">
-                            {getPhotos(claim)
-                              .slice(0, 3)
-                              .map((photo, index) => (
-                                <img
-                                  key={`${photo}-${index}`}
-                                  src={photo}
-                                  alt={`Evidence ${index + 1}`}
-                                  className="h-12 w-12 rounded-md object-cover"
-                                />
-                              ))}
-                          </div>
+                        {claimPhotos.length > 0 && (
+                          <ImageCarousel
+                            images={claimPhotos}
+                            alt={`Evidence for claim ${claim.id}`}
+                            className="mt-2 w-full"
+                            imageClassName="h-32 w-full rounded-md"
+                          />
                         )}
                         {claim.adminNotes && (
                           <div className="mt-3">
@@ -1131,7 +1132,7 @@ export default function AdminClaim({
                             </p>
                           </div>
                         )}
-                      </button>
+                      </div>
                     );
                   })}
                 </div>

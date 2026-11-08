@@ -65,37 +65,36 @@ export function AuthProvider({ children }) {
   }, [checkSession]);
 
   // Login
-  
-const login = async (credentials) => {
-  try {
-    const response = await authApi.login(credentials);
+  const login = async (credentials, { requiredRole } = {}) => {
+    try {
+      const response = await authApi.login(credentials);
 
-    const { token, type, role, studentNumber } = response.data;
+      const { token, role, studentNumber } = response.data;
 
-    if (!token) {
-      throw new Error("Login response missing JWT");
-    }
+      if (!token) {
+        throw new Error("Login response missing JWT");
+      }
 
-    // Save authentication token
-    sessionStorage.setItem(TOKEN_KEY, token);
+      const normalizedRole = String(role || "")
+        .toUpperCase()
+        .replace(/^ROLE_/, "");
+      if (
+        requiredRole &&
+        normalizedRole !== requiredRole.toUpperCase().replace(/^ROLE_/, "")
+      ) {
+        throw new Error("This account does not have administrator access.");
+      }
 
-    // Save user details in React Context
-    setUser({
-      role,
-      studentNumber
-    });
+      sessionStorage.setItem(TOKEN_KEY, token);
+      setUser({ role, studentNumber });
+      setStatus("authenticated");
 
-    // Update authentication state
-    setStatus("authenticated");
-
-    return true;
-
+      return true;
     } catch (error) {
       console.error("Login failed:", error);
       throw error;
     }
   };
-
 
   // Logout
   const logout = async () => {

@@ -5,6 +5,7 @@ import { IoDocumentTextOutline } from "react-icons/io5";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { FaRegCheckCircle, FaRegClock } from "react-icons/fa";
 import { RiErrorWarningLine } from "react-icons/ri";
+import ImageCarousel from "../../components/ImageCarousel";
 
 // stats card
 const StatCard = ({ icon: Icon, iconColor = "#2650aa", iconBgColor = "#eaf1f7", number = 0, text = "" }) => {
@@ -258,10 +259,16 @@ export default function Reports({ reports = emptyReports, onUpdateReport, onSend
               </div>
             ) : (
               filteredReports.map((report) => {
-                const image = getPhotos(report)[0];
+                const photos = getPhotos(report);
                 return (
                   <div key={report.id} className={`flex flex-wrap items-center gap-3 rounded-lg border p-3 transition-colors ${selectedReport?.id === report.id ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:bg-gray-50"}`}>
-                    {image ? <img src={image} alt={report.itemName ?? report.title ?? "Reported item"} className="h-16 w-16 rounded-md object-cover"/> : <div className="flex h-16 w-16 items-center justify-center rounded-md bg-[#eaf1f7]"><FiImage size={24} className="text-[#2650aa]"/></div>}
+                    <ImageCarousel
+                      images={photos}
+                      alt={report.itemName ?? report.title ?? "Reported item"}
+                      className="w-16"
+                      imageClassName="h-16 w-16 rounded-md"
+                      fallback={<FiImage size={24} className="text-[#2650aa]" />}
+                    />
                     <div className="min-w-0 flex-1">
                       <h3 className="font-semibold text-[#152862]">{report.itemName ?? report.title ?? "Unnamed item"}</h3>
                       <p className="mt-1 text-xs text-gray-500">{report.id} · Student {report.studentNumber ?? "Not provided"}</p>
@@ -297,8 +304,17 @@ export default function Reports({ reports = emptyReports, onUpdateReport, onSend
             <>
               {/* item information */}
               <div className="mt-5 flex flex-col gap-4 sm:flex-row">
-                <div className="flex h-40 w-full shrink-0 items-center justify-center overflow-hidden rounded-md bg-[#eaf1f7] sm:w-36">
-                  {photos.length ? <img src={photos[selectedPhoto] ?? photos[0]} alt={selectedReport.itemName ?? "Item"} className="h-full w-full object-cover"/> : <FiImage size={40} className="text-[#2650aa]"/>}
+                <div className="flex w-full shrink-0 flex-col items-center rounded-md bg-[#eaf1f7] sm:w-36">
+                  {photos.length ? (
+                    <ImageCarousel
+                      images={photos}
+                      alt={selectedReport.itemName ?? "Item"}
+                      activeIndex={selectedPhoto}
+                      onIndexChange={setSelectedPhoto}
+                      className="h-full w-full"
+                      imageClassName="h-40 w-full rounded-md"
+                    />
+                  ) : <FiImage size={40} className="text-[#2650aa]"/>}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center justify-between gap-2">

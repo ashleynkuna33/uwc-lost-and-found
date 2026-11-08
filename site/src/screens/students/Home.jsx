@@ -3,6 +3,7 @@ import { FaHandHoldingHeart } from "react-icons/fa";
 import { FiPlusCircle, FiSearch, FiX, FiHeadphones, FiMapPin, FiClock, FiChevronRight, FiPackage, FiRefreshCw, FiAlertCircle, FiInbox } from "react-icons/fi";
 
 import { itemApi } from "../../api/modules/items.api";
+import ImageCarousel from "../../components/ImageCarousel";
 
 import homeP1 from "../../assets/homeP1.png";
 import homeP2 from "../../assets/homeP2.jpg";
@@ -37,12 +38,6 @@ function getTimeAgo(timestamp, now) {
 }
 
 function RecentItemCard({ item, now, onClick }) {
-  const [imageError, setImageError] = useState(false);
-
-  const imageUrl = Array.isArray(item.images)
-    ? item.images.find(Boolean)
-    : null;
-
   const isLost = item.type === "LOST";
   const timestamp = getCreatedTimestamp(item);
 
@@ -52,9 +47,17 @@ function RecentItemCard({ item, now, onClick }) {
       : FiPackage;
 
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
+      aria-label={`View ${item.itemName || "item"} details`}
       onClick={onClick}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onClick();
+        }
+      }}
       className="
         group flex w-full shrink-0 items-center gap-3
         rounded-xl border border-gray-200
@@ -67,26 +70,13 @@ function RecentItemCard({ item, now, onClick }) {
       "
     >
       {/* ITEM IMAGE / ICON */}
-      <div
-        className="
-          flex h-14 w-14 shrink-0
-          items-center justify-center
-          overflow-hidden rounded-xl
-          bg-[#152862]/10 text-[#152862]
-        "
-      >
-        {imageUrl && !imageError ? (
-          <img
-            src={imageUrl}
-            alt={item.itemName}
-            loading="lazy"
-            onError={() => setImageError(true)}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <ItemIcon size={23} />
-        )}
-      </div>
+      <ImageCarousel
+        images={item.images}
+        alt={item.itemName || "Item image"}
+        className="w-14"
+        imageClassName="h-14 w-14 rounded-xl bg-[#152862]/10 text-[#152862]"
+        fallback={<ItemIcon size={23} />}
+      />
 
       {/* ITEM INFORMATION */}
       <div className="flex min-w-0 flex-1 flex-col gap-1">
@@ -155,7 +145,7 @@ function RecentItemCard({ item, now, onClick }) {
           group-hover:text-[#cead5e]
         "
       />
-    </button>
+    </div>
   );
 }
 

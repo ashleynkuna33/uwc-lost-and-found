@@ -16,47 +16,32 @@ import {
   FiMapPin,
   FiCalendar,
 } from "react-icons/fi";
+import ImageCarousel from "./ImageCarousel";
 
 // =====================================================
 // ITEM IMAGE COMPONENT
 // =====================================================
 
 function ItemImage({ item, viewMode }) {
-  const [imageError, setImageError] = useState(false);
-
-  const imageUrl = Array.isArray(item.images)
-    ? item.images.find(Boolean)
-    : null;
-
   const isGrid = viewMode === "grid";
 
   return (
-    <div
-      className={`
-        relative overflow-hidden bg-gray-100
-        flex items-center justify-center shrink-0
-        ${
-          isGrid
-            ? "w-full h-40 rounded-lg"
-            : "w-24 h-24 sm:w-32 sm:h-28 rounded-lg"
-        }
-      `}
-    >
-      {imageUrl && !imageError ? (
-        <img
-          src={imageUrl}
-          alt={item.itemName || "Item image"}
-          loading="lazy"
-          className="w-full h-full object-cover"
-          onError={() => setImageError(true)}
-        />
-      ) : (
-        <div className="flex flex-col items-center justify-center text-gray-400 gap-2">
-          <FiImage size={28} />
+    <ImageCarousel
+      images={item.images}
+      alt={item.itemName || "Item image"}
+      className={isGrid ? "w-full" : "w-24 sm:w-32"}
+      imageClassName={
+        isGrid
+          ? "h-40 w-full rounded-lg"
+          : "h-24 w-24 rounded-lg sm:h-28 sm:w-32"
+      }
+      fallback={
+        <div className="flex h-full flex-col items-center justify-center gap-2 text-gray-400">
+          <FiImage size={24} />
           <span className="text-[10px]">No image available</span>
         </div>
-      )}
-    </div>
+      }
+    />
   );
 }
 
@@ -69,6 +54,8 @@ function ItemsContainer({
   loading = false,
   error = null,
   onRetry,
+  onItemClick,
+  canOpenAnyItem = false,
 }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [category, setCategory] = useState("all");
@@ -458,16 +445,38 @@ function ItemsContainer({
           >
             {currentItems.map((item) => {
               const imageUrl = item.images?.[0];
+              const canOpenItem =
+                typeof onItemClick === "function" &&
+                (canOpenAnyItem ||
+                  String(item.type || "").toUpperCase() === "FOUND");
 
               return (
                 <div
                   key={item.id}
+                  role={canOpenItem ? "button" : undefined}
+                  tabIndex={canOpenItem ? 0 : undefined}
+                  aria-label={
+                    canOpenItem
+                      ? `${canOpenAnyItem ? "View details for" : "View claim form for"} ${item.itemName || "item"}`
+                      : undefined
+                  }
+                  onClick={() => canOpenItem && onItemClick(item)}
+                  onKeyDown={(event) => {
+                    if (
+                      canOpenItem &&
+                      (event.key === "Enter" || event.key === " ")
+                    ) {
+                      event.preventDefault();
+                      onItemClick(item);
+                    }
+                  }}
                   className={`
                     bg-white border border-gray-200 p-3
                     rounded-xl shadow-sm
                     hover:border-[#cead5e]
                     hover:shadow-md
                     transition-all duration-200
+                    ${canOpenItem ? "cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#152862]" : ""}
                     ${
                       viewMode === "grid"
                         ? "flex flex-col gap-3"

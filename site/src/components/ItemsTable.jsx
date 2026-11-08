@@ -1,4 +1,5 @@
 import { FiImage, FiTrash2 } from "react-icons/fi";
+import ImageCarousel from "./ImageCarousel";
 
 export default function ItemsTable({
   claims = [],
@@ -36,17 +37,13 @@ export default function ItemsTable({
               <tr key={claim.claimId} className="hover:bg-blue-50">
                 <td className="px-4 py-4">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-100">
-                      {claim.image ? (
-                        <img
-                          src={claim.image}
-                          alt={claim.itemName}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <FiImage size={22} className="text-gray-400" />
-                      )}
-                    </div>
+                    <ImageCarousel
+                      images={claim.images?.length ? claim.images : [claim.image]}
+                      alt={claim.itemName}
+                      className="w-12"
+                      imageClassName="h-12 w-12 rounded-lg bg-gray-100"
+                      fallback={<FiImage size={22} className="text-gray-400" />}
+                    />
 
                     <div>
                       <p className="font-semibold">{claim.itemName}</p>
