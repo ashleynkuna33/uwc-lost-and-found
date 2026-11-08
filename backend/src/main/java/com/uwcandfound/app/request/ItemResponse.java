@@ -19,5 +19,6 @@ public record ItemResponse(
         String location,
         String locationDetails,
         LocalDateTime dateOccurred,
+        LocalDateTime createdAt,
         List<String> images
 ) {}

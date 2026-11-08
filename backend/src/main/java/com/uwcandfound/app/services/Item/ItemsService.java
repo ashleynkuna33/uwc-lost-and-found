@@ -1,4 +1,3 @@
-
 package com.uwcandfound.app.services.Item;
 
 import com.uwcandfound.app.exceptions.ResourceNotFoundException;
@@ -39,7 +38,6 @@ public class ItemsService implements IItem {
             ZoneId.of("Africa/Johannesburg");
 
 
-
     @Override
     @Transactional(readOnly = true)
     public List<ItemResponse> getItems() {
@@ -58,6 +56,7 @@ public class ItemsService implements IItem {
 
                         item.getLocationDetails(),
                         item.getDateOccurred(),
+                        item.getCreatedAt(),
 
                         item.getItemImages()
                                 .stream()
