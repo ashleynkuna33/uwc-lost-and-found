@@ -7,6 +7,8 @@ import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.uwcandfound.app.models.Reports.ReportStatus;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -83,5 +85,10 @@ public class Item {
     public void removeImage(ItemImage image) {
         itemImages.remove(image);
         image.setItem(null);
+    }
+
+    public void setClosedReason(String reason) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setClosedReason'");
     }
 }
